@@ -1,0 +1,16 @@
+(?#ทโฐüร๛ณฦ)
+<h4><span class="mw-headline" id="(.*?)">.*?</span></h4>
+
+(?#ร่ส๖)
+.*?
+
+<table class="wikitable">
+<tr>
+.*?
+</tr>
+
+<tr>
+(?:<td.*?> (.*?)</td>){3}
+
+.*?
+</tr>
