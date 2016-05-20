@@ -143,12 +143,12 @@ namespace Mojang.Minecraft.Protocol
                     else throw new ArgumentException("参数类型(枚举)应用了[VarIntUnderlying], 其基础类型却不为int");
                 }
                 else if (actualParameterType.IsDefined(typeof(StringUnderlyingAttribute)))
-                {
-                    var str = actualParameter.ToString();
-                    var variableStr = new VarintPrefixedUTF8String(str);
-                    packageMaker.AppendPackageField(variableStr);
-                }
-                
+                    //如果目标实参在枚举类型中的字段应用了Renamed特性，则使用旧名称，否则使用枚举字段名称
+                    packageMaker.AppendPackageField<VarintPrefixedUTF8String>
+                    (
+                        Array.Find(actualParameterType.GetField(actualParameter.ToString()).CustomAttributes.ToArray(), custom => custom.AttributeType == typeof(RenamedAttribute))
+                        ?.ConstructorArguments.First().Value.ToString() ?? actualParameter.ToString()
+                    );
                 else //匹配对应的基础类型值并将其转换为对应枚举类型的实例
                 {
                     var val = Array.Find(

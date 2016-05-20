@@ -137,6 +137,20 @@ namespace Mojang.Minecraft.Protocol
         private class StringUnderlyingAttribute : Attribute { }
 
 
+        /// <summary>
+        /// 此枚举字段具有原始名称，区分大小写，且现有代码已经对其进行了重命名
+        /// <para>要求含有此字段的枚举必须应用StringUnderlying特性</para>
+        /// </summary>
+        [AttributeUsage(AttributeTargets.Field)]
+        public class RenamedAttribute : Attribute
+        {
+            public RenamedAttribute(string oldName)
+            {
+
+            }
+        }
+
+
         private void OnPackageReceived(FieldMatcher fieldMatcher)
        {
             var typeCode = fieldMatcher.PackageTypeCode;
@@ -270,9 +284,21 @@ namespace Mojang.Minecraft.Protocol
                 else if (formalParameterType.IsDefined(typeof(StringUnderlyingAttribute)))
                 {
                     //由于是从string中解析枚举, 所以枚举的基础类型并不重要
-                    //TODO: 警告: 枚举名称可选的字符集为字符全集的子集
-                    var str = ((string)(fieldMatcher.MatchPackageField<VarintPrefixedUTF8String>())).Split(':').Last();
-                    return Enum.Parse(formalParameterType, str, true);
+                    var currentFieldName = ((string)(fieldMatcher.MatchPackageField<VarintPrefixedUTF8String>())).Split(':').Last();
+
+                    //获得重命名字段旧名称与当前字段名称相同的字段
+                    var renamedFields = from field in formalParameterType.GetFields()
+                                        let renamedAttribute = Array.Find(field.CustomAttributes.ToArray(), custom => custom.AttributeType == typeof(RenamedAttribute))
+                                        where renamedAttribute != null && renamedAttribute.ConstructorArguments.First().Value.Equals(currentFieldName)
+                                        select field;
+
+                    if (renamedFields.Count() > 1)
+                        throw new ArgumentException("重命名枚举字段名称具有二义性");
+
+                    if (renamedFields.Count() == 1)
+                        currentFieldName = renamedFields.First().Name;
+
+                    return Enum.Parse(formalParameterType, currentFieldName, true);
                 }
                 else //匹配对应的基础类型值并将其转换为对应枚举类型的实例
                 {

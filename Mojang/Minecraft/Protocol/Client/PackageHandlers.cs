@@ -694,17 +694,17 @@ namespace Mojang.Minecraft.Protocol
         [StringUnderlying]
         public enum Inventory
         {
-            Chest,
-            Crafting_Table,
-            Furnace,
-            Dispenser,
-            Enchanting_Table,
-            Brewing_Stand,
-            Villager,
-            Beacon,
-            Anvil,
-            Hopper,
-            Dropper,
+            [Renamed("minecraft:chest")]Chest,
+            [Renamed("minecraft:crafting_table")]CraftingTable,
+            [Renamed("minecraft:furnace")]Furnace,
+            [Renamed("minecraft:dispenser")]Dispenser,
+            [Renamed("minecraft:enchanting_table")]EnchantingTable,
+            [Renamed("minecraft:brewing_stand")]BrewingStand,
+            [Renamed("minecraft:villager")]Villager,
+            [Renamed("minecraft:beacon")]Beacon,
+            [Renamed("minecraft:anvil")]Anvil,
+            [Renamed("minecraft:hopper")]Hopper,
+            [Renamed("minecraft:dropper")]Dropper,
             EntityHorse,
         }
 
