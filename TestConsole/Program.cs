@@ -27,13 +27,8 @@ namespace TestConsole
         {
             //foreach (var s in Array.ConvertAll(typeof(Test).GetFields(), f => f.CustomAttributes.Count() != 0 ? f.CustomAttributes.First().ConstructorArguments.First().Value : "null")) WriteLine(s);
             //由名称获得枚举字段
-            var field = Test.ele2;
-
-            field.GetType().GetField(field.ToString()).CustomAttributes.ToArray();
-            Array.Find(field.GetType().GetField(field.ToString()).CustomAttributes.ToArray(), custom => custom.AttributeType == typeof(RenamedTestAttribute));
-
-            WriteLine(Array.Find(field.GetType().GetField(field.ToString()).CustomAttributes.ToArray(), custom => custom.AttributeType == typeof(RenamedTestAttribute))?.ConstructorArguments.First().Value.ToString() ?? field.ToString());
-
+            WriteLine(Enum.Parse(typeof(Test), nameof(Test.ele1)));
+            
             //WriteLine(typeof(Test).GetField("ele3")?.ToString() ?? "xx");
             //new TestClient("localhost", 25565, "pst");
             ReadLine();

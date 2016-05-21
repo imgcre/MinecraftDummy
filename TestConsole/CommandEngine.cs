@@ -14,7 +14,7 @@ namespace TestConsole
 
         private object InvokeCommand(string commandName, params string[] parameters)
         {
-            //先判断是否有该方法名的方法
+            //TODO:先判断是否有该方法名的方法
             //如果存在，再判断参数是否匹配
             //Invalid overload
             var command = Array.Find(typeof(TestClient).GetMethods(BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.IgnoreCase)

@@ -100,24 +100,14 @@ namespace Mojang.Minecraft.Protocol
 
             }
 
-            public OptionalAttribute(Inventory context)
+            /// <summary>
+            /// 构造有条件的可选特性
+            /// </summary>
+            /// <param name="enumType">枚举类型</param>
+            /// <param name="enumNames">枚举类型的字段名称</param>
+            public OptionalAttribute(Type enumType, params string[] enumNames)
             {
-                Context = new Enum[] { context };
-            }
-
-            public OptionalAttribute(ScoreboardUpdateMode[] context)
-            {
-                Context = context.Cast<Enum>().ToArray();
-            }
-
-            public OptionalAttribute(CombatEvent context)
-            {
-                Context = new Enum[] { context };
-            }
-
-            public OptionalAttribute(CombatEvent[] context)
-            {
-                Context = context.Cast<Enum>().ToArray();
+                Context = Array.ConvertAll(enumNames, name => (Enum)Enum.Parse(enumType, name));
             }
 
         }

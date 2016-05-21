@@ -717,7 +717,7 @@ namespace Mojang.Minecraft.Protocol
         /// <param name="numSlots">窗口栏位数</param>
         /// <param name="entityId">马的实体ID，仅适用与窗口类型为EntityHorse的情况</param>
         [PackageHandler(0x2d)]
-        protected virtual void OnWindowOpened(byte windowId, [Variable] string windowType, Chat WindowTitle, byte numSlots, [Optional(Inventory.EntityHorse)] int? entityId)
+        protected virtual void OnWindowOpened(byte windowId, [Variable] string windowType, Chat WindowTitle, byte numSlots, [Optional(typeof(Inventory), nameof(Inventory.EntityHorse))] int? entityId)
         {
 
         }
@@ -911,8 +911,8 @@ namespace Mojang.Minecraft.Protocol
         (
             [Variable] string objectiveName, 
             ScoreboardUpdateMode scoreboardUpdateMode,
-            [Optional(new[] { ScoreboardUpdateMode.Create, ScoreboardUpdateMode.UpdateDisplayText }), Variable] string objectiveValue, 
-            [Optional(new[] { ScoreboardUpdateMode.Create, ScoreboardUpdateMode.UpdateDisplayText })] ScoreboardType type
+            [Optional(typeof(ScoreboardUpdateMode), nameof(ScoreboardUpdateMode.Create), nameof(ScoreboardUpdateMode.UpdateDisplayText)), Variable] string objectiveValue, 
+            [Optional(typeof(ScoreboardUpdateMode), nameof(ScoreboardUpdateMode.Create), nameof(ScoreboardUpdateMode.UpdateDisplayText))] ScoreboardType type
         )
         {
 
@@ -1010,10 +1010,10 @@ namespace Mojang.Minecraft.Protocol
         internal virtual void OnCombating
         (
             CombatEvent combatEvent,
-            [Optional(CombatEvent.EndCombat), Variable] int duration,
-            [Optional(CombatEvent.EntityDead), Variable] int playerId,
-            [Optional(new[] { CombatEvent.EndCombat, CombatEvent.EntityDead })] int entityId,
-            [Optional(CombatEvent.EntityDead), Variable] string message
+            [Optional(typeof(CombatEvent), nameof(CombatEvent.EndCombat)), Variable] int duration,
+            [Optional(typeof(CombatEvent), nameof(CombatEvent.EntityDead)), Variable] int playerId,
+            [Optional(typeof(CombatEvent), nameof(CombatEvent.EndCombat), nameof(CombatEvent.EntityDead))] int entityId,
+            [Optional(typeof(CombatEvent), nameof(CombatEvent.EntityDead)), Variable] string message
         )
         {
 
