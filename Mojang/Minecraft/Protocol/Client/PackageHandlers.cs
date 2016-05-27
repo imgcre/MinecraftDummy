@@ -196,6 +196,7 @@ namespace Mojang.Minecraft.Protocol
         }
 
 
+        //TODO
         /// <summary>
         /// 要更改玩家的维度(dimension=[主世界/下界/末地])，需要发送一个包含了合适的维度的重生数据包，紧跟着新维度的区块数据，最后是一个“坐标视点“包
         /// </summary>
@@ -282,9 +283,9 @@ namespace Mojang.Minecraft.Protocol
         }
 
 
-        /*
+        
         /// <summary>
-        /// 
+        /// 玩家生成
         /// </summary>
         /// <param name="entityId"></param>
         /// <param name="playerUuid"></param>
@@ -300,7 +301,7 @@ namespace Mojang.Minecraft.Protocol
         {
 
         }
-        */
+        
         
 
         /// <summary>
@@ -316,7 +317,7 @@ namespace Mojang.Minecraft.Protocol
         }
 
 
-        
+
 
         /*
         //TODO: enum绑定
@@ -339,7 +340,46 @@ namespace Mojang.Minecraft.Protocol
         */
 
 
-        /*
+        public enum MobType : byte
+        {
+            Mob = 48,
+            Monster,
+            Creeper,
+            Skeleton,
+            Spider,
+            GiantZombie,
+            Zombie,
+            Slime,
+            Ghast,
+            ZombiePigman,
+            Enderman,
+            CaveSpider,
+            Silverfish,
+            Blaze,
+            MagmaCube,
+            EnderDragon,
+            Wither,
+            Bat,
+            Witch,
+            Endermite,
+            Guardian,
+            Shulker,
+            Pig = 90,
+            Sheep,
+            Cow,
+            Chicken,
+            Squid,
+            Wolf,
+            Mooshroom,
+            Snowman,
+            Ocelot,
+            IronGolem,
+            Horse,
+            Rabbit,
+            Villager = 120,
+        }
+
+
         /// <summary>
         /// 实体被生成
         /// </summary>
@@ -356,11 +396,11 @@ namespace Mojang.Minecraft.Protocol
         /// <param name="velocityZ">实体速度z分量</param>
         /// <param name="metadata">实体元数据</param>
         [PackageHandler(0x0f)]
-        protected virtual void OnMobSpawned([Variable] int entityId, byte type, Fixed x, Fixed y, Fixed z, Angle yaw, Angle pitch, Angle headPitch, short velocityX, short velocityY, short velocityZ, EntityMetadata metadata)
+        protected virtual void OnMobSpawned([Variable] int entityId, MobType mobType, Fixed x, Fixed y, Fixed z, Angle yaw, Angle pitch, Angle headPitch, short velocityX, short velocityY, short velocityZ, EntityMetadata metadata)
         {
 
         }
-        */
+        
 
 
         public enum PaintingDirection : byte
@@ -565,7 +605,7 @@ namespace Mojang.Minecraft.Protocol
         }
 
 
-        /*
+        
         /// <summary>
         /// 
         /// </summary>
@@ -576,7 +616,7 @@ namespace Mojang.Minecraft.Protocol
         {
 
         }
-        */
+        
 
 
         public enum PotionEffect : byte
@@ -844,10 +884,6 @@ namespace Mojang.Minecraft.Protocol
         }
 
 
-        //StatisticsCame
-        //实现State, 以避免重载
-
-
         [PackageHandler(0x37)]
         protected virtual void OnStatisticsCame([VariableCount] Statistic[] statistic)
         {
@@ -998,6 +1034,8 @@ namespace Mojang.Minecraft.Protocol
             EntityDead,
         }
 
+
+        //TODO
         /// <summary>
         /// 
         /// </summary>

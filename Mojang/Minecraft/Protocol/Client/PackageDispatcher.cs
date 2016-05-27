@@ -145,6 +145,11 @@ namespace Mojang.Minecraft.Protocol
        {
             var typeCode = fieldMatcher.PackageTypeCode;
 
+            if (typeCode == 0x42)
+            {
+
+            }
+
             if (!PackageHandlers[_ConnectState].Keys.Contains(typeCode))
                 return;
 
@@ -174,8 +179,12 @@ namespace Mojang.Minecraft.Protocol
             Task.Run(() => handler[this](actualParameters));
 
             ShowPackageHandlerInvokeMessage(handler, actualParameters, new[] {
-                nameof(EssentialClient.OnDisconnectedWhenLogin),
-                
+                nameof(OnHealthUpdated),
+                nameof(OnSucessfullyLogined),
+                nameof(OnPlayerSpawned),
+                nameof(OnMobSpawned),
+                nameof(OnDisconnected),
+                nameof(OnCombating),
             });
         }
 
@@ -183,16 +192,16 @@ namespace Mojang.Minecraft.Protocol
         /// <summary>
         /// 在控制台中输出指定handler的签名及实参
         /// </summary>
-        [Conditional("Debug")]
+        //[Conditional("Debug")]
         private void ShowPackageHandlerInvokeMessage(PackageHandlerInfo handler, object[] actualParameters, string[] handlerRange)
         {
             if (handlerRange.Contains(handler.Name))
             {
-                var output = new StringBuilder(handler.Name);
+                var output = new StringBuilder($"handler's invoking info: {handler.Name}");
                 output.AppendLine();
 
                 for (var i = 0; i < actualParameters.Length; i++)
-                    output.AppendLine($"{handler.Fields[i].Name}: {actualParameters[i].ToString()}");
+                    output.AppendLine($"{handler.Fields[i].Name}: {actualParameters[i]?.ToString() ?? "null"}");
                 Console.WriteLine(output);
             }
         }
@@ -208,10 +217,16 @@ namespace Mojang.Minecraft.Protocol
         /// <returns></returns>
         private object GetActualParameter(FieldMatcher fieldMatcher, Type formalParameterType, IEnumerable<Attribute> formalParameterAttributes, List<object> context)
         {
-            var optionalAttribute = formalParameterAttributes.OfType<OptionalAttribute>().First();
-            if (optionalAttribute.Context != null)
+            var optionalAttributes = formalParameterAttributes.OfType<OptionalAttribute>();
+            var optionalAttribute = default(OptionalAttribute);
+            if (optionalAttributes.Count() > 0)
             {
-                if (context.Intersect(optionalAttribute.Context).Count() != 0)
+                optionalAttribute = optionalAttributes.First();
+            }
+
+            if (optionalAttribute?.Context != null)
+            {
+                if (context.Intersect(optionalAttribute.Context).Count() == 0)
                     return null;
             }
             else
@@ -267,7 +282,7 @@ namespace Mojang.Minecraft.Protocol
                     if (formalParameterType.GetEnumUnderlyingType() == typeof(int))
                     {
                         var val = (int)(fieldMatcher.MatchPackageField<VarInt>());
-                        return Enum.ToObject(typeof(VarIntUnderlyingAttribute), val);
+                        return Enum.ToObject(formalParameterType, val);
                     }
                     else throw new ArgumentException("参数类型(枚举)应用了[VarIntUnderlying], 其基础类型却不为int");
                 }

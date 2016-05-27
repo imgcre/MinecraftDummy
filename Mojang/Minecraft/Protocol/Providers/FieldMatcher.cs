@@ -45,6 +45,22 @@ namespace Mojang.Minecraft.Protocol.Providers
         }
 
 
+        public T Match<T>()
+            => (T)Match(typeof(T));
+
+        public object Match(Type t)
+        {
+            if (t.GetInterface(nameof(IPackageField)) != null)
+            {
+                return MatchPackageField(t);
+            }
+            else
+            {
+                return MatchMetaType(t);
+            }
+        }
+
+
         public T MatchPackageField<T>()
             where T : IPackageField, new()
         {
@@ -93,7 +109,7 @@ namespace Mojang.Minecraft.Protocol.Providers
 
         public byte[] ReadBytes(int count)
         {
-            if (count <= 0)
+            if (count < 0)
                 throw new ArgumentException("读取的元素数必须大于0");
 
             if (disposedValue)
@@ -131,11 +147,11 @@ namespace Mojang.Minecraft.Protocol.Providers
                 {
                     if (ResidualPackageBodyLength != 0)
                     {
-                        Console.WriteLine($"未实现的封包: {PackageTypeCode:x}");
+                        //Console.WriteLine($"未实现的封包: {PackageTypeCode:x}");
                         if (UsedBodyLength != 0)
-                            throw new ArgumentException($"封包id为{PackageTypeCode}的handler签名与协议不匹配");
+                            throw new ArgumentException($"封包id为0x{PackageTypeCode:x2}的handler签名与协议不匹配");
 
-                        ReadBytes(ResidualPackageBodyLength);
+                        var bytes = ReadBytes(ResidualPackageBodyLength);
                     }
                 }
                 disposedValue = true;
