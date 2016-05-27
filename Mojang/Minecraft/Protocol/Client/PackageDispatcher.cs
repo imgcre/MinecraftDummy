@@ -113,6 +113,30 @@ namespace Mojang.Minecraft.Protocol
         }
 
 
+        private enum UnderlyingType
+        {
+            Byte,
+            Short,
+            Int,
+        }
+
+
+        /// <summary>
+        /// 此参数的类型以新枚举类型的基础类型获得字段，并将其转换为枚举类型
+        /// </summary>
+        [AttributeUsage(AttributeTargets.Parameter)]
+        private class UnderlyingTypeRedefinedAttribute : Attribute
+        {
+            public readonly Type NewUnderlyingType;
+
+            public UnderlyingTypeRedefinedAttribute(UnderlyingType newUnderlyingType)
+            {
+                NewUnderlyingType = new Type[] { typeof(byte), typeof(short), typeof(int) }[(int)newUnderlyingType];
+            }
+
+        }
+
+
         /// <summary>
         /// 此枚举的基础类型为Varint
         /// </summary>
@@ -145,11 +169,6 @@ namespace Mojang.Minecraft.Protocol
        {
             var typeCode = fieldMatcher.PackageTypeCode;
 
-            if (typeCode == 0x42)
-            {
-
-            }
-
             if (!PackageHandlers[_ConnectState].Keys.Contains(typeCode))
                 return;
 
@@ -179,12 +198,9 @@ namespace Mojang.Minecraft.Protocol
             Task.Run(() => handler[this](actualParameters));
 
             ShowPackageHandlerInvokeMessage(handler, actualParameters, new[] {
-                nameof(OnHealthUpdated),
                 nameof(OnSucessfullyLogined),
-                nameof(OnPlayerSpawned),
-                nameof(OnMobSpawned),
                 nameof(OnDisconnected),
-                nameof(OnCombating),
+                nameof(OnRespawned),
             });
         }
 
@@ -307,7 +323,15 @@ namespace Mojang.Minecraft.Protocol
                 }
                 else //匹配对应的基础类型值并将其转换为对应枚举类型的实例
                 {
-                    var val = fieldMatcher.MatchMetaType(formalParameterType.GetEnumUnderlyingType());
+                    //如果参数的枚举类型基础类型被重定义，则匹配新的基础类型
+                    
+                    var underlyingTypeRedefinedAttribute = formalParameterAttributes.TakeWhile(attribute => attribute.GetType().Equals(typeof(UnderlyingTypeRedefinedAttribute)));
+                    var val = default(object);
+
+                    if (underlyingTypeRedefinedAttribute.Count() > 0)
+                        val = fieldMatcher.MatchMetaType((underlyingTypeRedefinedAttribute.First() as UnderlyingTypeRedefinedAttribute).NewUnderlyingType);
+                    else
+                        val = fieldMatcher.MatchMetaType(formalParameterType.GetEnumUnderlyingType());
                     return Enum.ToObject(formalParameterType, val);
                 }
             }

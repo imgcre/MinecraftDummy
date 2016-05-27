@@ -196,7 +196,8 @@ namespace Mojang.Minecraft.Protocol
         }
 
 
-        //TODO
+        //TODO, Dimension枚举的基础类型需要被重定义为整数
+        //UnderlyingTypeRedefinedAttribute
         /// <summary>
         /// 要更改玩家的维度(dimension=[主世界/下界/末地])，需要发送一个包含了合适的维度的重生数据包，紧跟着新维度的区块数据，最后是一个“坐标视点“包
         /// </summary>
@@ -205,7 +206,7 @@ namespace Mojang.Minecraft.Protocol
         /// <param name="difficulty">从0~3分别对应了 和平，简单，普通和困难</param>
         /// <param name="levelType">default:普通世界 flat:超平坦 largeBiomes:巨大生物群系 amlified:放大世界 default_1_1:老算法的普通世界</param>
         [PackageHandler(0X07)]
-        protected virtual void OnRespawned(Dimension dimension, Difficulty difficulty, Gamemodes gamemode, LevelType levelType)
+        protected virtual void OnRespawned([UnderlyingTypeRedefined(UnderlyingType.Int)] Dimension dimension, Difficulty difficulty, Gamemodes gamemode, LevelType levelType)
         {
             
         }
@@ -691,6 +692,7 @@ namespace Mojang.Minecraft.Protocol
         }
 
 
+        /*
         /// <summary>
         /// 
         /// </summary>
@@ -701,6 +703,7 @@ namespace Mojang.Minecraft.Protocol
         {
 
         }
+        */
 
 
         public enum GlobalEntityType : byte

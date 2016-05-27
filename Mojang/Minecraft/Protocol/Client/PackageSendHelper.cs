@@ -151,9 +151,18 @@ namespace Mojang.Minecraft.Protocol
                     );
                 else //匹配对应的基础类型值并将其转换为对应枚举类型的实例
                 {
+                    //如果参数的枚举类型基础类型被重定义，则将枚举类型转为此重定义类型
+                    var underlyingType = default(Type);
+                    var underlyingTypeRedefinedAttributes = formalParameterAttributes.TakeWhile(attribute => attribute.GetType().Equals(typeof(UnderlyingTypeRedefinedAttribute)));
+                    if (underlyingTypeRedefinedAttributes.Count() > 0)
+                        underlyingType = (underlyingTypeRedefinedAttributes.First() as UnderlyingTypeRedefinedAttribute).NewUnderlyingType;
+                    else
+                        underlyingType = Enum.GetUnderlyingType(actualParameterType);
+
+
                     var val = Array.Find(
                         typeof(Convert).GetMethods(BindingFlags.Static | BindingFlags.Public),
-                        m => m.ReturnParameter.ParameterType == Enum.GetUnderlyingType(actualParameterType) && m.GetParameters().Length == 1)
+                        m => m.ReturnParameter.ParameterType == underlyingType && m.GetParameters().Length == 1)
                         .Invoke(null, new object[] { actualParameter });
                     packageMaker.AppendMetaType(val);
                 }
