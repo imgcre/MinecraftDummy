@@ -105,9 +105,9 @@ namespace Mojang.Minecraft.Protocol
             /// </summary>
             /// <param name="enumType">枚举类型</param>
             /// <param name="enumNames">枚举类型的字段名称</param>
-            public OptionalAttribute(Type enumType, params string[] enumNames)
+            public OptionalAttribute(params object[] enums)
             {
-                Context = Array.ConvertAll(enumNames, name => (Enum)Enum.Parse(enumType, name));
+                Context = Array.ConvertAll(enums, enu => (Enum)enu);
             }
 
         }
@@ -201,6 +201,7 @@ namespace Mojang.Minecraft.Protocol
                 nameof(OnSucessfullyLogined),
                 nameof(OnDisconnected),
                 nameof(OnRespawned),
+                nameof(OnGameJoined),
             });
         }
 

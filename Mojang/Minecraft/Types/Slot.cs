@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using fNbt;
 using Mojang.Minecraft.Protocol.Providers;
+using System.Text.RegularExpressions;
 
 namespace Mojang.Minecraft
 {
@@ -73,6 +74,43 @@ namespace Mojang.Minecraft
         public override string ToString()
         {
             return string.Format("itemId={0}&itemCount={1}&itemDamage={2}&nbtRoot={3}", ItemId, ItemCount, ItemDamage, Root);
+        }
+
+
+        public static bool TryParse(string s, out Slot result)
+        {
+            try
+            {
+                result = Parse(s);
+            }
+            catch (FormatException)
+            {
+                result = new Slot();
+                return false;
+            }
+            return true;
+        }
+
+
+        /*Slot语法
+         * id:count:damage
+
+        */
+        public static Slot Parse(string s)
+        {
+            var regex = new Regex(@"^(\d+):(\d+):(\d+)$");
+            if(!regex.IsMatch(s))
+                throw new FormatException();
+
+            var match = regex.Match(s);
+            var slot = new Slot
+            {
+                ItemId = short.Parse($"{match.Groups[1]}"),
+                ItemCount = byte.Parse($"{match.Groups[2]}"),
+                ItemDamage = short.Parse($"{match.Groups[3]}"),
+            };
+
+            return slot;
         }
 
     }

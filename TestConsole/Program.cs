@@ -13,6 +13,7 @@ using System.Dynamic;
 using Mojang.Minecraft.Protocol;
 using System.IO.Compression;
 using System.IO;
+using System.Text.RegularExpressions;
 
 namespace TestConsole
 {

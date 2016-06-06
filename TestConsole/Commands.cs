@@ -32,6 +32,15 @@ namespace TestConsole
         }
 
         [Command]
+        private void Collect() => GC.Collect();
+
+
+        [Command]//TODO
+        private void SetSlot(short slot, Slot item) => SetInventorySlot(slot, item).Wait();
+
+
+
+        [Command]
         private string Echo(string str) => str;
 
         [Command]

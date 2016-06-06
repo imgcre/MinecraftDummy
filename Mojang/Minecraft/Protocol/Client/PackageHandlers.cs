@@ -169,7 +169,6 @@ namespace Mojang.Minecraft.Protocol
         */
 
 
-        //TODO:10字节什么鬼
         /// <summary>
         /// 服务器在客户端登陆后发送的指定玩家出生点（包括出生位置和指南针指向），它也可以在任何时候被发送，不过那只会影响指南针的指向。
         /// </summary>
@@ -196,10 +195,8 @@ namespace Mojang.Minecraft.Protocol
         }
 
 
-        //TODO, Dimension枚举的基础类型需要被重定义为整数
-        //UnderlyingTypeRedefinedAttribute
         /// <summary>
-        /// 要更改玩家的维度(dimension=[主世界/下界/末地])，需要发送一个包含了合适的维度的重生数据包，紧跟着新维度的区块数据，最后是一个“坐标视点“包
+        /// 要更改玩家的维度，需要发送一个包含了合适的维度的重生数据包，紧跟着新维度的区块数据，最后是一个“坐标视点“包
         /// </summary>
         /// <param name="gamemode">0:生存模式 1:创造模式 2:冒险模式 第三位(0x08)是极限模式的标识符</param>
         /// <param name="dimension">-1:下界  0:主世界  1:末地</param>
@@ -605,8 +602,8 @@ namespace Mojang.Minecraft.Protocol
 
         }
 
-
         
+        /*TODO
         /// <summary>
         /// 
         /// </summary>
@@ -617,7 +614,7 @@ namespace Mojang.Minecraft.Protocol
         {
 
         }
-        
+        */
 
 
         public enum PotionEffect : byte
@@ -692,7 +689,7 @@ namespace Mojang.Minecraft.Protocol
         }
 
 
-        /*
+        /*TODO
         /// <summary>
         /// 
         /// </summary>
@@ -760,7 +757,7 @@ namespace Mojang.Minecraft.Protocol
         /// <param name="numSlots">窗口栏位数</param>
         /// <param name="entityId">马的实体ID，仅适用与窗口类型为EntityHorse的情况</param>
         [PackageHandler(0x2d)]
-        protected virtual void OnWindowOpened(byte windowId, [Variable] string windowType, Chat WindowTitle, byte numSlots, [Optional(typeof(Inventory), nameof(Inventory.EntityHorse))] int? entityId)
+        protected virtual void OnWindowOpened(byte windowId, [Variable] string windowType, Chat WindowTitle, byte numSlots, [Optional(Inventory.EntityHorse)] int? entityId)
         {
 
         }
@@ -778,6 +775,7 @@ namespace Mojang.Minecraft.Protocol
         }
 
 
+        /*TODO
         /// <summary>
         /// 某窗口中栏位的物品被增加/移除
         /// </summary>
@@ -789,8 +787,10 @@ namespace Mojang.Minecraft.Protocol
         {
 
         }
+        */
 
 
+        /*
         //TODO:有歧义
         /// <summary>
         /// 窗口中栏位的物品被增加/移除
@@ -802,6 +802,7 @@ namespace Mojang.Minecraft.Protocol
         {
 
         }
+        */
 
 
         /// <summary>
@@ -950,8 +951,8 @@ namespace Mojang.Minecraft.Protocol
         (
             [Variable] string objectiveName, 
             ScoreboardUpdateMode scoreboardUpdateMode,
-            [Optional(typeof(ScoreboardUpdateMode), nameof(ScoreboardUpdateMode.Create), nameof(ScoreboardUpdateMode.UpdateDisplayText)), Variable] string objectiveValue, 
-            [Optional(typeof(ScoreboardUpdateMode), nameof(ScoreboardUpdateMode.Create), nameof(ScoreboardUpdateMode.UpdateDisplayText))] ScoreboardType type
+            [Optional(ScoreboardUpdateMode.Create, ScoreboardUpdateMode.UpdateDisplayText), Variable] string objectiveValue, 
+            [Optional(ScoreboardUpdateMode.Create, ScoreboardUpdateMode.UpdateDisplayText)] ScoreboardType type
         )
         {
 
@@ -1038,7 +1039,6 @@ namespace Mojang.Minecraft.Protocol
         }
 
 
-        //TODO
         /// <summary>
         /// 
         /// </summary>
@@ -1051,10 +1051,10 @@ namespace Mojang.Minecraft.Protocol
         internal virtual void OnCombating
         (
             CombatEvent combatEvent,
-            [Optional(typeof(CombatEvent), nameof(CombatEvent.EndCombat)), Variable] int duration,
-            [Optional(typeof(CombatEvent), nameof(CombatEvent.EntityDead)), Variable] int playerId,
-            [Optional(typeof(CombatEvent), nameof(CombatEvent.EndCombat), nameof(CombatEvent.EntityDead))] int entityId,
-            [Optional(typeof(CombatEvent), nameof(CombatEvent.EntityDead)), Variable] string message
+            [Optional(CombatEvent.EndCombat), Variable] int duration,
+            [Optional(CombatEvent.EntityDead), Variable] int playerId,
+            [Optional(CombatEvent.EndCombat, CombatEvent.EntityDead)] int entityId,
+            [Optional(CombatEvent.EntityDead), Variable] string message
         )
         {
 
