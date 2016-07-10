@@ -13,6 +13,11 @@ namespace Mojang.Minecraft.Protocol
     public class PlayerClient : EssentialClient
     {
         public string Username { get; set; }
+        public double X { get; private set; }
+        public double Y { get; private set; }
+        public double Z { get; private set; }
+        public float Yaw { get; private set; }
+        public float Pitch { get; private set; }
 
         /// <summary>
         /// 连接至mc服务器
@@ -46,7 +51,50 @@ namespace Mojang.Minecraft.Protocol
         }
 
 
-        
+        protected override void OnPlayerPositionAndLookCame(double x, double y, double z, float yaw, float pitch, RelativePositions relativePositions)
+        {
+            if ((relativePositions | RelativePositions.X) != 0) X += x;
+            else X = x;
+
+            if ((relativePositions | RelativePositions.Y) != 0) Y += y;
+            else Y = y;
+
+            if ((relativePositions | RelativePositions.Z) != 0) Z += z;
+            else Z = z;
+
+            Yaw = yaw;
+            Pitch = pitch;
+            SetPositionAndLook(x, y, z, yaw, pitch, true).Wait();
+            base.OnPlayerPositionAndLookCame(x, y, z, yaw, pitch, relativePositions);
+        }
+
+
+        protected override async Task SetPositionAndLook(double x, double feetY, double z, float yaw, float pitch, bool isOnGround)
+        {
+            X = x;
+            Y = feetY;
+            Z = z;
+            Yaw = yaw;
+            Pitch = pitch;
+            await base.SetPositionAndLook(x, feetY, z, yaw, pitch, isOnGround);
+        }
+
+
+        protected override async Task SetPosition(double x, double feetY, double z, bool isOnGround)
+        {
+            X = x;
+            Y = feetY;
+            Z = z;
+            await base.SetPosition(x, feetY, z, isOnGround);
+        }
+
+
+        protected override Task SetLook(float yaw, float pitch, bool isOnGround)
+        {
+            Yaw = yaw;
+            Pitch = pitch;
+            return base.SetLook(yaw, pitch, isOnGround);
+        }
 
     }
 }

@@ -160,13 +160,13 @@ namespace Mojang.Minecraft.Protocol
         }
         
         
-        /*
+        
         [PackageHandler(0x04)]
         protected virtual void OnEntityEquipped([Variable] int entityId, EquipmentSlot slot, Slot item)
         {
             
         }
-        */
+        
 
 
         /// <summary>
@@ -209,6 +209,9 @@ namespace Mojang.Minecraft.Protocol
         }
 
 
+        /// <summary>
+        /// 如果某标志位被设置，那么此标志位所表示的坐标值就是相对的
+        /// </summary>
         [Flags]
         public enum RelativePositions : byte
         {
@@ -220,8 +223,6 @@ namespace Mojang.Minecraft.Protocol
         }
 
 
-        private bool _HasServerSendSpawnPositionAndLook;
-
         /// <summary>
         /// 更新玩家在服务器上的坐标。如果服务器上次已知的玩家坐标和最新发送的数据包的数据的坐标位置相差超过100单位的话，将导致玩家因“移动速度太快 :( (使用作弊器?)”而提出服务器。
         /// <para>一般来说如果定点小数的X轴或Z轴的值大于3.2E7D将导致客户端被踢出并显示“无效的坐标”。</para>
@@ -231,17 +232,11 @@ namespace Mojang.Minecraft.Protocol
         /// <param name="z">绝对/相对坐标的X值</param>
         /// <param name="yaw">偏航（yaw）以角度计算，而且会遵循经典三角规则。偏航的圆单位是在XZ平面上以(0,1)为原点绕逆时针旋转，90度为(-1,0)，180度时为(0,-1)，270度时为(1,0)。</param>
         /// <param name="pitch">仰角（pitch）是以角度计算，0代表直视前方，-90表示看正上方，而90表示看正下方。</param>
-        /// <param name="relativePositions">如果某标志位被设置，那么此标志位所表示的坐标值就是现对的</param>
+        /// <param name="relativePositions">如果某标志位被设置，那么此标志位所表示的坐标值就是相对的</param>
         [PackageHandler(0X08)]
         protected virtual void OnPlayerPositionAndLookCame(double x, double y, double z, float yaw, float pitch, RelativePositions relativePositions)
         {
-            if (!_HasServerSendSpawnPositionAndLook)
-            {
-                _HasServerSendSpawnPositionAndLook = true;
-                SetPositionAndLook(x, y, z, yaw, pitch, true).Wait();
-            }
-
-
+            
         }
 
 
@@ -590,6 +585,7 @@ namespace Mojang.Minecraft.Protocol
         }
 
 
+        //TODO: ATTACH?
         /// <summary>
         /// 实体被依附
         /// </summary>
@@ -597,13 +593,13 @@ namespace Mojang.Minecraft.Protocol
         /// <param name="vehicleId">交通工具的实体ID</param>
         /// <param name="leash">如果为true将绑定实体于交通工具上</param>
         [PackageHandler(0x1b)]
-        protected virtual void OnEntityAttacked(int entityId, int vehicleId, bool leash)
+        protected virtual void OnEntityAttached(int entityId, int vehicleId, bool leash)
         {
 
         }
 
         
-        /*TODO
+        /*TODO: 元数据格式错误问题于实体元数据改变
         /// <summary>
         /// 
         /// </summary>
@@ -689,7 +685,7 @@ namespace Mojang.Minecraft.Protocol
         }
 
 
-        /*TODO
+        /*TODO: 玩家数据api
         /// <summary>
         /// 
         /// </summary>
@@ -775,7 +771,6 @@ namespace Mojang.Minecraft.Protocol
         }
 
 
-        /*TODO
         /// <summary>
         /// 某窗口中栏位的物品被增加/移除
         /// </summary>
@@ -787,11 +782,11 @@ namespace Mojang.Minecraft.Protocol
         {
 
         }
-        */
+        
 
 
         /*
-        //TODO:有歧义
+        //TODO:slot可空有歧义, 窗口栏位物品事件
         /// <summary>
         /// 窗口中栏位的物品被增加/移除
         /// </summary>
@@ -806,7 +801,7 @@ namespace Mojang.Minecraft.Protocol
 
 
         /// <summary>
-        /// 
+        /// 窗口属性被改变
         /// </summary>
         /// <param name="windowId"></param>
         /// <param name="property">将被更新的状态类型</param>
@@ -997,7 +992,6 @@ namespace Mojang.Minecraft.Protocol
 
         }
 
-        //TODO:0x3e Optional需改进
         //如果当前为Optional字段
         //……如果当前剩余流
         //…………尝试反序列化此字段

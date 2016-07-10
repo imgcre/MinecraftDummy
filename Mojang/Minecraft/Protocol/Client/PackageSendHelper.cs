@@ -167,7 +167,7 @@ namespace Mojang.Minecraft.Protocol
                     packageMaker.AppendMetaType(val);
                 }
             }
-            //TODO:128
+            //TODO:宽度为128的整数发送侧
             else throw new ArgumentOutOfRangeException("参数类型超出了预计的范围");
         }
 

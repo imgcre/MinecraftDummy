@@ -33,8 +33,9 @@ namespace Mojang.Minecraft
             }
             catch (NbtFormatException)
             {
-                _NbtFile = new NbtFile();
+                //读出0, nbt字段为空
             }
+            
         }
 
 

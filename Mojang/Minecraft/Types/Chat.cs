@@ -183,7 +183,7 @@ namespace Mojang.Minecraft
         void IPackageField.AppendIntoPackageMaker(PackageMaker packageMaker)
         {
             var jsonStr = new VarintPrefixedUTF8String(ToJsonString(_InnerJson));
-            //TODO:空牌子
+            //TODO:空牌子解释
             if (jsonStr == "{}")
                 jsonStr = "\"\"";
             (jsonStr as IPackageField).AppendIntoPackageMaker(packageMaker);

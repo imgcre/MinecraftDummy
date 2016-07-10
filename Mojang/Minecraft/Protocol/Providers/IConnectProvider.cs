@@ -20,4 +20,15 @@ namespace Mojang.Minecraft.Protocol.Providers
         ushort ServerPort { get; }
 
     }
+
+
+    /// <summary>
+    /// ConnectProvider内部连接已断开
+    /// </summary>
+    public class ConnectDisconnectedException : Exception
+    {
+
+    }
+
+
 }

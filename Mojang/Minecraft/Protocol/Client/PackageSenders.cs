@@ -43,12 +43,12 @@ namespace Mojang.Minecraft.Protocol
 
 
         [PackageSender(0x00, State.Status)]
-        protected async Task HandshakeRequest()
+        protected virtual async Task HandshakeRequest()
             => await SendPackage();
 
 
         [PackageSender(0x00, State.Login)]
-        protected async Task Login([Variable] string name)
+        protected virtual async Task Login([Variable] string name)
             => await SendPackage(name);
 
         
@@ -58,17 +58,17 @@ namespace Mojang.Minecraft.Protocol
         /// <param name="keepAlive"></param>
         /// <returns></returns>
         [PackageSender(0x00)]
-        protected async Task KeepAlive([Variable] int keepAlive)
+        protected virtual async Task KeepAlive([Variable] int keepAlive)
             => await SendPackage(keepAlive);
 
 
         [PackageSender(0x01, State.Status)]
-        protected async Task Ping(long payload)
+        protected virtual async Task Ping(long payload)
             => await SendPackage(payload);
 
 
         [PackageSender(0x01, State.Login)]
-        protected async Task ResponseEncryption([VariableCount] byte[] sharedSecret, [VariableCount] byte[] verifyToken)
+        protected virtual async Task ResponseEncryption([VariableCount] byte[] sharedSecret, [VariableCount] byte[] verifyToken)
             => await SendPackage(sharedSecret, verifyToken);
 
 
@@ -78,7 +78,7 @@ namespace Mojang.Minecraft.Protocol
         /// <param name="message">默认的服务器会检查消息是否以‘/’开头。若不是，则将发送者的名字添加到消息前并将它发送给所有客户端端（包括发送者自己）。如果是以‘/’开头，服务器将认为它是一个指令并尝试处理它。</param>
         /// <returns></returns>
         [PackageSender(0x01)]
-        protected async Task Chat([Variable] string message)
+        protected virtual async Task Chat([Variable] string message)
             => await SendPackage(message);
 
 
@@ -91,8 +91,8 @@ namespace Mojang.Minecraft.Protocol
         }
 
 
-        //TODO
-        //存在重载
+        //TODO: 1.8存在实体用法重载
+        //
         /// <summary>
         /// 攻击或右键实体(比如玩家,马,矿车...)
         /// <para>原版服务器只会在实体距离玩家不超过4单位长度,并且两者之间视线不受阻碍时,才会处理此数据包;在1.8中若两者之间没有视线,则距离不能超过3.若视线通畅,则距离不能超过6.</para>
@@ -102,7 +102,7 @@ namespace Mojang.Minecraft.Protocol
         /// <param name="entityUseWay"></param>
         /// <returns></returns>
         [PackageSender(0x02)]
-        protected async Task UseEntity([Variable] int targetEntityId, EntityUseWay entityUseWay)
+        protected virtual async Task UseEntity([Variable] int targetEntityId, EntityUseWay entityUseWay)
             => await SendPackage(targetEntityId, entityUseWay);
         
 
@@ -115,11 +115,10 @@ namespace Mojang.Minecraft.Protocol
         /// <param name="isOnGround"></param>
         /// <returns>true为在地上或者在游泳,false为其他情况</returns>
         [PackageSender(0x03)]
-        protected async Task ChangeOnGroundState(bool isOnGround)
+        protected virtual async Task ChangeOnGroundState(bool isOnGround)
             => await SendPackage(isOnGround);
 
 
-        //TODO
         /// <summary>
         /// 更新位置.
         /// <para>如果头部Y减去脚底Y小于0.1或大于1.65,服务器会以“Illegal Stance”为理由踢出玩家. </para>
@@ -133,11 +132,10 @@ namespace Mojang.Minecraft.Protocol
         /// <param name="isOnGround">true为在地上或者在游泳,false为其他情况</param>
         /// <returns></returns>
         [PackageSender(0x04)]
-        protected async Task SetPosition(double x, double feetY, double z, bool isOnGround)
+        protected virtual async Task SetPosition(double x, double feetY, double z, bool isOnGround)
             => await SendPackage(x, feetY, z, isOnGround);
 
 
-        //TODO
         /// <summary>
         /// 更新玩家正在观察的方向.
         /// </summary>
@@ -146,11 +144,10 @@ namespace Mojang.Minecraft.Protocol
         /// <param name="isOnGround">true为在地上或者在游泳,false为其他情况</param>
         /// <returns></returns>
         [PackageSender(0x05)]
-        protected async Task SetLook(float yaw, float pitch, bool isOnGround)
+        protected virtual async Task SetLook(float yaw, float pitch, bool isOnGround)
             => await SendPackage(yaw, pitch, isOnGround);
 
 
-        //TODO
         /// <summary>
         /// 同时结合了玩家位置和观察的数据包.
         /// </summary>
@@ -162,7 +159,7 @@ namespace Mojang.Minecraft.Protocol
         /// <param name="isOnGround">true为在地上或者在游泳,false为其他情况</param>
         /// <returns></returns>
         [PackageSender(0x06)]
-        protected async Task SetPositionAndLook(double x, double feetY, double z, float yaw, float pitch, bool isOnGround)
+        protected virtual async Task SetPositionAndLook(double x, double feetY, double z, float yaw, float pitch, bool isOnGround)
             => await SendPackage(x, feetY, z, yaw, pitch, isOnGround);
 
 
@@ -188,7 +185,6 @@ namespace Mojang.Minecraft.Protocol
         }
 
 
-        //TODO:POSITION
         /// <summary>
         /// 采集方块. 只接受距离玩家6个单位距离以内的挖掘
         /// </summary>
@@ -197,7 +193,7 @@ namespace Mojang.Minecraft.Protocol
         /// <param name="blockFace">挖掘的面</param>
         /// <returns></returns>
         [PackageSender(0x07)]
-        protected async Task DigBlock(DiggingAction diggingAction, Position location, BlockFace blockFace)
+        protected virtual async Task DigBlock(DiggingAction diggingAction, Position location, BlockFace blockFace)
             => await SendPackage(diggingAction, location, blockFace);
 
 
@@ -212,7 +208,7 @@ namespace Mojang.Minecraft.Protocol
         /// <param name="cursorPositionZ"></param>
         /// <returns></returns>
         [PackageSender(0x08)]
-        protected async Task PlaceBlock(Position location, BlockFace blockFace, Slot heldItem, byte cursorPositionX, byte cursorPositionY, byte cursorPositionZ)
+        protected virtual async Task PlaceBlock(Position location, BlockFace blockFace, Slot heldItem, byte cursorPositionX, byte cursorPositionY, byte cursorPositionZ)
             => await SendPackage(location, blockFace, heldItem, cursorPositionX, cursorPositionY, cursorPositionZ);
 
 
@@ -222,7 +218,7 @@ namespace Mojang.Minecraft.Protocol
         /// <param name="slot">欲选择的栏位</param>
         /// <returns></returns>
         [PackageSender(0x09)]
-        protected async Task ChangeHeldItem(short slot)
+        protected virtual async Task ChangeHeldItem(short slot)
             => await SendPackage(slot);
 
         
@@ -231,7 +227,7 @@ namespace Mojang.Minecraft.Protocol
         /// </summary>
         /// <returns></returns>
         [PackageSender(0x0a)]
-        protected async Task SwingArm()
+        protected virtual async Task SwingArm()
             => await SendPackage();
 
 
@@ -256,7 +252,7 @@ namespace Mojang.Minecraft.Protocol
         /// <param name="jumpBoost">马跳加速，范围从0到100</param>
         /// <returns></returns>
         [PackageSender(0x0b)]
-        protected async Task ActEntity([Variable] int entityId, EntityAction entityAction, [Variable] int jumpBoost)
+        protected virtual async Task ActEntity([Variable] int entityId, EntityAction entityAction, [Variable] int jumpBoost)
             => await SendPackage(entityId, entityAction, jumpBoost);
 
 
@@ -276,7 +272,7 @@ namespace Mojang.Minecraft.Protocol
         /// <param name="steerFlags"></param>
         /// <returns></returns>
         [PackageSender(0x0c)]
-        protected async Task SteerVehicle(float sideways, float forward, SteerFlags steerFlags)
+        protected virtual async Task SteerVehicle(float sideways, float forward, SteerFlags steerFlags)
             => await SendPackage(sideways, forward, steerFlags);
 
 
@@ -287,7 +283,7 @@ namespace Mojang.Minecraft.Protocol
         /// <param name="windowId">要关闭的窗口的ID，0表示背包</param>
         /// <returns></returns>
         [PackageSender(0x0d)]
-        protected async Task CloseWindow(byte windowId)
+        protected virtual async Task CloseWindow(byte windowId)
             => await SendPackage(windowId);
 
         /*
@@ -326,7 +322,7 @@ namespace Mojang.Minecraft.Protocol
         /// <param name="clickedItem"></param>
         /// <returns></returns>
         [PackageSender(0x0e)]
-        protected async Task ClickWindow(byte windowId, short slot, byte button, short actionNumber, byte mode, Slot clickedItem)
+        protected virtual async Task ClickWindow(byte windowId, short slot, byte button, short actionNumber, byte mode, Slot clickedItem)
             => await SendPackage(windowId, slot, button, actionNumber, mode, clickedItem);
 
 
@@ -338,7 +334,7 @@ namespace Mojang.Minecraft.Protocol
         /// <param name="accepted">操作是否被接受</param>
         /// <returns></returns>
         [PackageSender(0x0f)]
-        protected async Task ConfirmWindowTransaction(byte windowId, short actionNumber, bool accepted)
+        protected virtual async Task ConfirmWindowTransaction(byte windowId, short actionNumber, bool accepted)
             => await SendPackage(windowId, actionNumber, accepted);
 
 
@@ -349,7 +345,7 @@ namespace Mojang.Minecraft.Protocol
         /// <param name="item">所需获得的物品slot数据</param>
         /// <returns></returns>
         [PackageSender(0x10)]
-        protected async Task SetInventorySlot(short slot, Slot item)
+        protected virtual async Task SetInventorySlot(short slot, Slot item)
             => await SendPackage(slot, item);
 
 
@@ -360,7 +356,7 @@ namespace Mojang.Minecraft.Protocol
         /// <param name="enchantment">附魔物品在附魔台窗口的位置，从0开始作为最高的一个</param>
         /// <returns></returns>
         [PackageSender(0x11)]
-        protected async Task EnchantItem(byte windowId, byte enchantment)
+        protected virtual async Task EnchantItem(byte windowId, byte enchantment)
             => await SendPackage(windowId, enchantment);
 
 
@@ -374,7 +370,7 @@ namespace Mojang.Minecraft.Protocol
         /// <param name="line4">牌子的第四行</param>
         /// <returns></returns>
         [PackageSender(0x12)]
-        protected async Task UpdateSign(Position location, Chat line1, Chat line2, Chat line3, Chat line4)
+        protected virtual async Task UpdateSign(Position location, Chat line1, Chat line2, Chat line3, Chat line4)
             => await SendPackage(location, line1, line2, line3, line4);
 
         /*
@@ -387,12 +383,12 @@ namespace Mojang.Minecraft.Protocol
         /// <param name="walkingSpeed">行走速度</param>
         /// <returns></returns>
         [PackageSender(0x13)]
-        protected async Task SetPlayerAbilities(PlayerAbilities playerAbilities, float flyingSpeed, float walkingSpeed)
+        protected virtual async Task SetPlayerAbilities(PlayerAbilities playerAbilities, float flyingSpeed, float walkingSpeed)
             => await SendPackage(playerAbilities, flyingSpeed, walkingSpeed);
 
         */
 
-        //TODO:错误的协议
+        //TODO: 无法实现自动补全，协议问题？
         /// <summary>
         /// 输入文本进行补全请求
         /// </summary>
@@ -401,7 +397,7 @@ namespace Mojang.Minecraft.Protocol
         /// <param name="lookedAtBlock">只有在hasPosition==true时才能不为null</param>
         /// <returns></returns>
         [PackageSender(0x14)]
-        protected async Task TabCompleteRequest([Variable] string text, bool hasPosition, [Optional] Position? lookedAtBlock)
+        protected virtual async Task TabCompleteRequest([Variable] string text, bool hasPosition, [Optional] Position? lookedAtBlock)
             => await SendPackage(text, hasPosition, lookedAtBlock);
 
 
@@ -435,7 +431,7 @@ namespace Mojang.Minecraft.Protocol
         /// <param name="displayedSkinParts">皮肤部分</param>
         /// <returns></returns>
         [PackageSender(0x15)]
-        protected async Task SetClientSettings([Variable] string locale, byte viewDistance, ChatMode chatMode, bool chatColors, DisplayedSkinParts displayedSkinParts)
+        protected virtual async Task SetClientSettings([Variable] string locale, byte viewDistance, ChatMode chatMode, bool chatColors, DisplayedSkinParts displayedSkinParts)
             => await SendPackage(locale, viewDistance, chatMode, chatColors, displayedSkinParts);
 
 
@@ -452,7 +448,7 @@ namespace Mojang.Minecraft.Protocol
         /// <param name="action">表示需改变的状态</param>
         /// <returns></returns>
         [PackageSender(0x16)]
-        protected async Task ChangeState(StateAction action)
+        protected virtual async Task ChangeState(StateAction action)
             => await SendPackage(action);
 
 
@@ -465,7 +461,7 @@ namespace Mojang.Minecraft.Protocol
         /// <param name="targetPlayer">目标玩家</param>
         /// <returns></returns>
         [PackageSender(0x18)]
-        protected async Task Spectate(Uuid targetPlayer)
+        protected virtual async Task Spectate(Uuid targetPlayer)
             => await SendPackage(targetPlayer);
 
 
@@ -486,7 +482,7 @@ namespace Mojang.Minecraft.Protocol
         /// <param name="reslut">欲设置的结果</param>
         /// <returns></returns>
         [PackageSender(0x19)]
-        protected async Task SetResourcePackStatus([Variable] string hash, ResourcePackResult reslut)
+        protected virtual async Task SetResourcePackStatus([Variable] string hash, ResourcePackResult reslut)
             => await SendPackage(hash, reslut);
 
     }

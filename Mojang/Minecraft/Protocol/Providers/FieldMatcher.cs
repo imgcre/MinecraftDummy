@@ -15,20 +15,21 @@ namespace Mojang.Minecraft.Protocol.Providers
         public readonly int PackageTypeCode;
         public bool Empty => ResidualPackageBodyLength <= 0;
         private readonly int PackageLength;
-        private readonly int PackageBodyLength;
+        //TODO:private
+        public readonly int PackageBodyLength;
         public readonly bool IsNullPackage;
         private int UsedBodyLength;
 
-        public Stream Stream => _Stream;
+
+        //FIXME: 如果直接返回FieldMatcher内部的stream，则将脱离fieldMatcher对于封包状态的管理
+        public Stream Stream => new FieldMatcherStream(this);
 
         private int ResidualPackageBodyLength => PackageBodyLength - UsedBodyLength;
         
 
         public FieldMatcher(Stream stream)
         {
-            // TODO: 重构
-
-            // 获得封包长度，注意此处未为封包长度赋值
+            // 获得封包长度，注意此处未赋值封包长度
             _Stream = stream;
             var packageLength = MatchPackageField<VarInt>();
             PackageLength = packageLength;
@@ -118,7 +119,7 @@ namespace Mojang.Minecraft.Protocol.Providers
             if (PackageBodyLength != 0)
             {
                 UsedBodyLength += count;
-                if (ResidualPackageBodyLength < 0) // 等于0为刚好读完
+                if (ResidualPackageBodyLength < 0) // 等于0则恰好读完
                     throw new ArgumentException("剩余字段长度不足");
             }
 
@@ -151,6 +152,7 @@ namespace Mojang.Minecraft.Protocol.Providers
                         if (UsedBodyLength != 0)
                             throw new ArgumentException($"封包id为0x{PackageTypeCode:x2}的handler签名与协议不匹配");
 
+                        //如果已使用的封包数据长度为0， 则表示未实现此封包的handler，此时需要FieldMatcher来平衡stream
                         var bytes = ReadBytes(ResidualPackageBodyLength);
                     }
                 }
@@ -164,4 +166,64 @@ namespace Mojang.Minecraft.Protocol.Providers
         #endregion
 
     }
+
+
+    public class FieldMatcherStream : Stream
+    {
+        private FieldMatcher _FieldMatcher;
+
+        internal FieldMatcherStream(FieldMatcher fieldMatcher)
+        {
+            _FieldMatcher = fieldMatcher;
+        }
+
+
+        public override bool CanRead => true;
+
+        public override bool CanSeek => false;
+
+        public override bool CanWrite => false;
+
+        public override long Length => _FieldMatcher.PackageBodyLength;
+
+        public override long Position
+        {
+            get
+            {
+                throw new NotSupportedException();
+            }
+
+            set
+            {
+                throw new NotSupportedException();
+            }
+        }
+
+        public override void Flush()
+        {
+            throw new NotSupportedException();
+        }
+
+        public override int Read(byte[] buffer, int offset, int count)
+        {
+            Array.Copy(_FieldMatcher.ReadBytes(count), 0, buffer, offset, count);
+            return count;
+        }
+
+        public override long Seek(long offset, SeekOrigin origin)
+        {
+            throw new NotSupportedException();
+        }
+
+        public override void SetLength(long value)
+        {
+            throw new NotSupportedException();
+        }
+
+        public override void Write(byte[] buffer, int offset, int count)
+        {
+            throw new NotSupportedException();
+        }
+    }
+
 }

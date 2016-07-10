@@ -102,5 +102,40 @@ namespace Mojang.Minecraft
         public override string ToString()
             => new Guid(A, B, C, D, E, F, G, H, I, J, K).ToString();
 
+
+        public static bool TryParse(string s, out Uuid result)
+        {
+            try
+            {
+                result = Parse(s);
+            }
+            catch (FormatException)
+            {
+                result = new Uuid();
+                return false;
+            }
+            return true;
+        }
+
+
+        public static Uuid Parse(string s)
+        {
+            var guid = new Guid(s);
+            var byteArray = guid.ToByteArray();
+            return new Uuid()
+            {
+                A = BitConverter.ToInt32(byteArray, 0),
+                B = BitConverter.ToInt16(byteArray, 4),
+                C = BitConverter.ToInt16(byteArray, 6),
+                D = byteArray[8],
+                E = byteArray[9],
+                F = byteArray[10],
+                G = byteArray[11],
+                H = byteArray[12],
+                I = byteArray[13],
+                J = byteArray[14],
+                K = byteArray[15],
+            };
+        }
     }
 }

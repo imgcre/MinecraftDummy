@@ -86,7 +86,6 @@ namespace Mojang.Minecraft.Protocol
         [AttributeUsage(AttributeTargets.Parameter)]
         private class VariableAttribute : Attribute { }
 
-        //TODO
         /// <summary>
         /// 此参数是可选的
         /// </summary>
@@ -202,6 +201,9 @@ namespace Mojang.Minecraft.Protocol
                 nameof(OnDisconnected),
                 nameof(OnRespawned),
                 nameof(OnGameJoined),
+                nameof(OnEntityEquipped),
+                nameof(OnWindowOpened),
+                nameof(OnPlayerPositionAndLookCame),
             });
         }
 
@@ -209,7 +211,7 @@ namespace Mojang.Minecraft.Protocol
         /// <summary>
         /// 在控制台中输出指定handler的签名及实参
         /// </summary>
-        //[Conditional("Debug")]
+        [Conditional("DEBUG")]
         private void ShowPackageHandlerInvokeMessage(PackageHandlerInfo handler, object[] actualParameters, string[] handlerRange)
         {
             if (handlerRange.Contains(handler.Name))
@@ -336,7 +338,7 @@ namespace Mojang.Minecraft.Protocol
                     return Enum.ToObject(formalParameterType, val);
                 }
             }
-            //TODO:128
+            //TODO:宽度为128位的整数
             else throw new ArgumentOutOfRangeException("参数类型超出了预计的范围");
         }
 

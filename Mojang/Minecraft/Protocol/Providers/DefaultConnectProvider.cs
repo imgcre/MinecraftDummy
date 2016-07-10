@@ -20,6 +20,10 @@ namespace Mojang.Minecraft.Protocol.Providers
         private object _ListLock = new object();
 
 
+        //在读入或写出是查询TCP链接是否已被关闭
+        //如果抛出异常，
+
+
         public DefaultConnectProvider(string serverAddress, ushort serverPort)
         {
             _TcpClient = new TcpClient(serverAddress, serverPort);
@@ -75,6 +79,8 @@ namespace Mojang.Minecraft.Protocol.Providers
 
         public async Task Send(byte[] data)
         {
+            //data = new byte[] { 20, 0, 47, 14, 50, 50, 50, 46, 49, 56, 55, 46, 50, 53, 52, 46, 53, 48, 99, 221, 1 };
+
             await _TcpClient.GetStream().WriteAsync(data, 0, data.Length);
         }
     }

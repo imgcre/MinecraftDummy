@@ -11,10 +11,17 @@ namespace TestConsole
     {
         private class CommandAttribute : Attribute { }
 
+        private class CommandInnerException : Exception
+        {
+            public CommandInnerException(string message) : base(message)
+            {
+
+            }
+        }
+
 
         private object InvokeCommand(string commandName, params string[] parameters)
         {
-            //TODO:先判断是否有该方法名的方法
             //如果存在，再判断参数是否匹配
             //Invalid overload
             var command = Array.Find(typeof(TestClient).GetMethods(BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.IgnoreCase)
@@ -45,6 +52,8 @@ namespace TestConsole
                 }
                 Console.WriteLine($"将执行的命令:{commandName}");
                 return command.Invoke(this, paramList.ToArray());
+
+                
             }
             else throw new CommandNotFoundException($"unknown command: {commandName}");
         }

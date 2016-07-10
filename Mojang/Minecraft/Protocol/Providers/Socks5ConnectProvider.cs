@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 
 namespace Mojang.Minecraft.Protocol.Providers
 {
-    //TODO: 懒得实现全， 以后具体实现
     //http://www.cnblogs.com/zhujiechang/archive/2008/10/21/1316308.html
     public class Socks5TcpConnectProvider : DefaultConnectProvider
     {

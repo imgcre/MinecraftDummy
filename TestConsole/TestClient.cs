@@ -101,7 +101,7 @@ namespace TestConsole
                     if (!(string.IsNullOrEmpty(reciever) || reciever == Username))
                         return;
 
-                    if (sender == "SiNian")
+                    if (sender == "imgcre")
                     {
                         var instruction = playerMessage.Split(SPLITTER);
                         try
