@@ -87,11 +87,11 @@ namespace Mojang.Minecraft
         }
         */
 
-        void IPackageField.AppendIntoPackageMaker(PackageMaker packageMaker)
-            => packageMaker.AppendMetaType(ToLong());
+        void IPackageField.AppendIntoField(FieldMaker fieldMaker)
+            => fieldMaker.AppendMetaType(ToLong());
         
 
-        void IPackageField.FromFieldMatcher(FieldMatcher fieldMatcher)
+        void IPackageField.FromField(FieldMatcher fieldMatcher)
         {
             this = new Position(fieldMatcher.MatchMetaType<long>());
         }

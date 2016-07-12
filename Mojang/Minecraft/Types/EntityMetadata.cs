@@ -32,7 +32,7 @@ namespace Mojang.Minecraft
 
         }
 
-        void IPackageField.FromFieldMatcher(FieldMatcher fieldMatcher)
+        void IPackageField.FromField(FieldMatcher fieldMatcher)
         {
             for (var keyAndType = fieldMatcher.ReadByte(); keyAndType != 127; keyAndType = fieldMatcher.ReadByte())
             {
@@ -61,14 +61,14 @@ namespace Mojang.Minecraft
                     typeof(short),
                     typeof(int),
                     typeof(float),
-                    typeof(VarintPrefixedUTF8String),
+                    typeof(PString),
                     typeof(Slot),
                     new[] { typeof(int), typeof(int), typeof(int) },
                     new[] { typeof(float), typeof(float), typeof(float) }
                 }[typeCode];
 
 
-        void IPackageField.AppendIntoPackageMaker(PackageMaker packageMaker)
+        void IPackageField.AppendIntoField(FieldMaker fieldMaker)
         {
             throw new NotImplementedException();
         }

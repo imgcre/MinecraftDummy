@@ -166,10 +166,10 @@ namespace Mojang.Minecraft
         public override string ToString()
             => ToJsonString(_InnerJson as ExpandoObject);
 
-        void IPackageField.FromFieldMatcher(FieldMatcher fieldMatcher)
+        void IPackageField.FromField(FieldMatcher fieldMatcher)
         {
-            var jsonStr = new VarintPrefixedUTF8String();
-            (jsonStr as IPackageField).FromFieldMatcher(fieldMatcher);
+            var jsonStr = new PString();
+            (jsonStr as IPackageField).FromField(fieldMatcher);
             if (string.Empty.Equals(jsonStr) || jsonStr == "\"\"")
             {
                 _InnerJson = new ExpandoObject();
@@ -180,13 +180,13 @@ namespace Mojang.Minecraft
             }
         }
 
-        void IPackageField.AppendIntoPackageMaker(PackageMaker packageMaker)
+        void IPackageField.AppendIntoField(FieldMaker fieldMaker)
         {
-            var jsonStr = new VarintPrefixedUTF8String(ToJsonString(_InnerJson));
+            var jsonStr = new PString(ToJsonString(_InnerJson));
             //TODO:空牌子解释
             if (jsonStr == "{}")
                 jsonStr = "\"\"";
-            (jsonStr as IPackageField).AppendIntoPackageMaker(packageMaker);
+            (jsonStr as IPackageField).AppendIntoField(fieldMaker);
         }
 
         public static implicit operator string (Chat json)

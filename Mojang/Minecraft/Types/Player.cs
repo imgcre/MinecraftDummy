@@ -12,12 +12,12 @@ namespace Mojang.Minecraft
         public Uuid UUID { get; private set; }
 
 
-        void IPackageField.FromFieldMatcher(FieldMatcher fieldMatcher)
+        void IPackageField.FromField(FieldMatcher fieldMatcher)
         {
             throw new NotImplementedException();
         }
 
-        void IPackageField.AppendIntoPackageMaker(PackageMaker packageMaker)
+        void IPackageField.AppendIntoField(FieldMaker fieldMaker)
         {
             throw new NotImplementedException();
         }

@@ -18,7 +18,6 @@ using Mojang.Minecraft.Protocol;
 using System.IO.Compression;
 using System.IO;
 using System.Text.RegularExpressions;
-using zlibNET;
 using System.Diagnostics;
 using System.Collections;
 
@@ -35,7 +34,7 @@ namespace TestConsole
 
         static void Main(string[] args)
         {
-            //var k = new TestClient("localhost", 25565, "pst");
+            var k = new TestClient("localhost", 25565, "pst");
             ReadLine();
         }
 

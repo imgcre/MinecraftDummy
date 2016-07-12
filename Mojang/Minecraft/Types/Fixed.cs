@@ -17,12 +17,12 @@ namespace Mojang.Minecraft
         private int Raw;
 
 
-        void IPackageField.FromFieldMatcher(FieldMatcher fieldMatcher)
+        void IPackageField.FromField(FieldMatcher fieldMatcher)
             => Raw = fieldMatcher.MatchMetaType<int>();
         
 
-        void IPackageField.AppendIntoPackageMaker(PackageMaker packageMaker) 
-            => packageMaker.AppendMetaType(Raw);
+        void IPackageField.AppendIntoField(FieldMaker fieldMaker) 
+            => fieldMaker.AppendMetaType(Raw);
 
 
         public static implicit operator double (Fixed f)

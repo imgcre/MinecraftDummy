@@ -14,17 +14,17 @@ namespace Mojang.Minecraft
         public int Value { get; private set; }
 
 
-        void IPackageField.FromFieldMatcher(FieldMatcher fieldMatcher)
+        void IPackageField.FromField(FieldMatcher fieldMatcher)
         {
-            Name = fieldMatcher.MatchPackageField<VarintPrefixedUTF8String>();
+            Name = fieldMatcher.MatchPackageField<PString>();
             Value = fieldMatcher.MatchPackageField<VarInt>();
         }
 
 
-        void IPackageField.AppendIntoPackageMaker(PackageMaker packageMaker)
+        void IPackageField.AppendIntoField(FieldMaker fieldMaker)
         {
-            packageMaker.AppendPackageField<VarintPrefixedUTF8String>(Name);
-            packageMaker.AppendPackageField<VarInt>(Value);
+            fieldMaker.AppendPackageField<PString>(Name);
+            fieldMaker.AppendPackageField<VarInt>(Value);
         }
     }
 }

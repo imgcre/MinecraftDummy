@@ -14,25 +14,25 @@ namespace Mojang.Minecraft
     internal interface IPackageField
     {
 
-        void FromFieldMatcher(FieldMatcher fieldMatcher);
+        void FromField(FieldMatcher fieldMatcher);
 
         /// <summary>
         /// 将对象序列化为byte[]
         /// </summary>
         /// <returns>序列化的结果</returns>
-        void AppendIntoPackageMaker(PackageMaker packageMaker);
+        void AppendIntoField(FieldMaker fieldMaker);
     }
 
     
     internal static class IBitConvertibleHelper
     {
-        public static T TOIBitConvertible<T>(this byte[] data)
+        public static T ToPackageField<T>(this byte[] data)
             where T : IPackageField, new()
         {
             var stream = new MemoryStream(data) { Position = 0 };
             var fieldMatcher = new FieldMatcher(stream);
             var o = new T();
-            o.FromFieldMatcher(fieldMatcher);
+            o.FromField(fieldMatcher);
             return o;
         }
     }

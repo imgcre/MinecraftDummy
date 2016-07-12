@@ -25,7 +25,7 @@ namespace Mojang.Minecraft
         }
 
 
-        void IPackageField.FromFieldMatcher(FieldMatcher fieldMatcher)
+        void IPackageField.FromField(FieldMatcher fieldMatcher)
         {
             try
             {
@@ -39,12 +39,12 @@ namespace Mojang.Minecraft
         }
 
 
-        void IPackageField.AppendIntoPackageMaker(PackageMaker packageMaker)
+        void IPackageField.AppendIntoField(FieldMaker fieldMaker)
         {
             if (Root.Count == 0)
-                packageMaker.AppendMetaType((byte)0);
+                fieldMaker.AppendMetaType((byte)0);
             else //packageMaker.AppendBytes(_NbtFile.SaveToBuffer(_NbtFile.FileCompression));
-                packageMaker.AppendBytes(_NbtFile.SaveToBuffer(NbtCompression.None));
+                fieldMaker.AppendBytes(_NbtFile.SaveToBuffer(NbtCompression.None));
         }
     }
 }

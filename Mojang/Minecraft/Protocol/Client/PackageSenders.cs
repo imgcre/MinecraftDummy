@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Mojang.Minecraft.Protocol.Providers;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -29,7 +30,7 @@ namespace Mojang.Minecraft.Protocol
         [PackageSender(0x00, State.Handshaking)]
         protected async Task Handshake([Variable] int protocolVersion, [Variable] string serverAddress, ushort serverPort, LoginNextState nextState)
         {
-            await SendPackage(protocolVersion, serverAddress, serverPort, nextState);
+            await _PackageSenderManager.MakeField(protocolVersion, serverAddress, serverPort, nextState);
             switch (nextState)
             {
                 case LoginNextState.Ping:
@@ -44,12 +45,12 @@ namespace Mojang.Minecraft.Protocol
 
         [PackageSender(0x00, State.Status)]
         protected virtual async Task HandshakeRequest()
-            => await SendPackage();
+            => await _PackageSenderManager.MakeField();
 
 
         [PackageSender(0x00, State.Login)]
         protected virtual async Task Login([Variable] string name)
-            => await SendPackage(name);
+            => await _PackageSenderManager.MakeField(name);
 
         
         /// <summary>
@@ -59,17 +60,17 @@ namespace Mojang.Minecraft.Protocol
         /// <returns></returns>
         [PackageSender(0x00)]
         protected virtual async Task KeepAlive([Variable] int keepAlive)
-            => await SendPackage(keepAlive);
+            => await _PackageSenderManager.MakeField(keepAlive);
 
 
         [PackageSender(0x01, State.Status)]
         protected virtual async Task Ping(long payload)
-            => await SendPackage(payload);
+            => await _PackageSenderManager.MakeField(payload);
 
 
         [PackageSender(0x01, State.Login)]
         protected virtual async Task ResponseEncryption([VariableCount] byte[] sharedSecret, [VariableCount] byte[] verifyToken)
-            => await SendPackage(sharedSecret, verifyToken);
+            => await _PackageSenderManager.MakeField(sharedSecret, verifyToken);
 
 
         /// <summary>
@@ -79,7 +80,7 @@ namespace Mojang.Minecraft.Protocol
         /// <returns></returns>
         [PackageSender(0x01)]
         protected virtual async Task Chat([Variable] string message)
-            => await SendPackage(message);
+            => await _PackageSenderManager.MakeField(message);
 
 
         [VarIntUnderlying]
@@ -103,7 +104,7 @@ namespace Mojang.Minecraft.Protocol
         /// <returns></returns>
         [PackageSender(0x02)]
         protected virtual async Task UseEntity([Variable] int targetEntityId, EntityUseWay entityUseWay)
-            => await SendPackage(targetEntityId, entityUseWay);
+            => await _PackageSenderManager.MakeField(targetEntityId, entityUseWay);
         
 
 
@@ -116,7 +117,7 @@ namespace Mojang.Minecraft.Protocol
         /// <returns>true为在地上或者在游泳,false为其他情况</returns>
         [PackageSender(0x03)]
         protected virtual async Task ChangeOnGroundState(bool isOnGround)
-            => await SendPackage(isOnGround);
+            => await _PackageSenderManager.MakeField(isOnGround);
 
 
         /// <summary>
@@ -133,7 +134,7 @@ namespace Mojang.Minecraft.Protocol
         /// <returns></returns>
         [PackageSender(0x04)]
         protected virtual async Task SetPosition(double x, double feetY, double z, bool isOnGround)
-            => await SendPackage(x, feetY, z, isOnGround);
+            => await _PackageSenderManager.MakeField(x, feetY, z, isOnGround);
 
 
         /// <summary>
@@ -145,7 +146,7 @@ namespace Mojang.Minecraft.Protocol
         /// <returns></returns>
         [PackageSender(0x05)]
         protected virtual async Task SetLook(float yaw, float pitch, bool isOnGround)
-            => await SendPackage(yaw, pitch, isOnGround);
+            => await _PackageSenderManager.MakeField(yaw, pitch, isOnGround);
 
 
         /// <summary>
@@ -160,7 +161,7 @@ namespace Mojang.Minecraft.Protocol
         /// <returns></returns>
         [PackageSender(0x06)]
         protected virtual async Task SetPositionAndLook(double x, double feetY, double z, float yaw, float pitch, bool isOnGround)
-            => await SendPackage(x, feetY, z, yaw, pitch, isOnGround);
+            => await _PackageSenderManager.MakeField(x, feetY, z, yaw, pitch, isOnGround);
 
 
         public enum DiggingAction : byte
@@ -194,7 +195,7 @@ namespace Mojang.Minecraft.Protocol
         /// <returns></returns>
         [PackageSender(0x07)]
         protected virtual async Task DigBlock(DiggingAction diggingAction, Position location, BlockFace blockFace)
-            => await SendPackage(diggingAction, location, blockFace);
+            => await _PackageSenderManager.MakeField(diggingAction, location, blockFace);
 
 
         /// <summary>
@@ -209,7 +210,7 @@ namespace Mojang.Minecraft.Protocol
         /// <returns></returns>
         [PackageSender(0x08)]
         protected virtual async Task PlaceBlock(Position location, BlockFace blockFace, Slot heldItem, byte cursorPositionX, byte cursorPositionY, byte cursorPositionZ)
-            => await SendPackage(location, blockFace, heldItem, cursorPositionX, cursorPositionY, cursorPositionZ);
+            => await _PackageSenderManager.MakeField(location, blockFace, heldItem, cursorPositionX, cursorPositionY, cursorPositionZ);
 
 
         /// <summary>
@@ -219,7 +220,7 @@ namespace Mojang.Minecraft.Protocol
         /// <returns></returns>
         [PackageSender(0x09)]
         protected virtual async Task ChangeHeldItem(short slot)
-            => await SendPackage(slot);
+            => await _PackageSenderManager.MakeField(slot);
 
         
         /// <summary>
@@ -228,7 +229,7 @@ namespace Mojang.Minecraft.Protocol
         /// <returns></returns>
         [PackageSender(0x0a)]
         protected virtual async Task SwingArm()
-            => await SendPackage();
+            => await _PackageSenderManager.MakeField();
 
 
         [VarIntUnderlying]
@@ -253,7 +254,7 @@ namespace Mojang.Minecraft.Protocol
         /// <returns></returns>
         [PackageSender(0x0b)]
         protected virtual async Task ActEntity([Variable] int entityId, EntityAction entityAction, [Variable] int jumpBoost)
-            => await SendPackage(entityId, entityAction, jumpBoost);
+            => await _PackageSenderManager.MakeField(entityId, entityAction, jumpBoost);
 
 
         [Flags]
@@ -273,7 +274,7 @@ namespace Mojang.Minecraft.Protocol
         /// <returns></returns>
         [PackageSender(0x0c)]
         protected virtual async Task SteerVehicle(float sideways, float forward, SteerFlags steerFlags)
-            => await SendPackage(sideways, forward, steerFlags);
+            => await _PackageSenderManager.MakeField(sideways, forward, steerFlags);
 
 
 
@@ -284,7 +285,7 @@ namespace Mojang.Minecraft.Protocol
         /// <returns></returns>
         [PackageSender(0x0d)]
         protected virtual async Task CloseWindow(byte windowId)
-            => await SendPackage(windowId);
+            => await _PackageSenderManager.MakeField(windowId);
 
         /*
         
@@ -323,7 +324,7 @@ namespace Mojang.Minecraft.Protocol
         /// <returns></returns>
         [PackageSender(0x0e)]
         protected virtual async Task ClickWindow(byte windowId, short slot, byte button, short actionNumber, byte mode, Slot clickedItem)
-            => await SendPackage(windowId, slot, button, actionNumber, mode, clickedItem);
+            => await _PackageSenderManager.MakeField(windowId, slot, button, actionNumber, mode, clickedItem);
 
 
         /// <summary>
@@ -335,7 +336,7 @@ namespace Mojang.Minecraft.Protocol
         /// <returns></returns>
         [PackageSender(0x0f)]
         protected virtual async Task ConfirmWindowTransaction(byte windowId, short actionNumber, bool accepted)
-            => await SendPackage(windowId, actionNumber, accepted);
+            => await _PackageSenderManager.MakeField(windowId, actionNumber, accepted);
 
 
         /// <summary>
@@ -346,7 +347,7 @@ namespace Mojang.Minecraft.Protocol
         /// <returns></returns>
         [PackageSender(0x10)]
         protected virtual async Task SetInventorySlot(short slot, Slot item)
-            => await SendPackage(slot, item);
+            => await _PackageSenderManager.MakeField(slot, item);
 
 
         /// <summary>
@@ -357,7 +358,7 @@ namespace Mojang.Minecraft.Protocol
         /// <returns></returns>
         [PackageSender(0x11)]
         protected virtual async Task EnchantItem(byte windowId, byte enchantment)
-            => await SendPackage(windowId, enchantment);
+            => await _PackageSenderManager.MakeField(windowId, enchantment);
 
 
         /// <summary>
@@ -371,7 +372,7 @@ namespace Mojang.Minecraft.Protocol
         /// <returns></returns>
         [PackageSender(0x12)]
         protected virtual async Task UpdateSign(Position location, Chat line1, Chat line2, Chat line3, Chat line4)
-            => await SendPackage(location, line1, line2, line3, line4);
+            => await _PackageSenderManager.MakeField(location, line1, line2, line3, line4);
 
         /*
 
@@ -384,7 +385,7 @@ namespace Mojang.Minecraft.Protocol
         /// <returns></returns>
         [PackageSender(0x13)]
         protected virtual async Task SetPlayerAbilities(PlayerAbilities playerAbilities, float flyingSpeed, float walkingSpeed)
-            => await SendPackage(playerAbilities, flyingSpeed, walkingSpeed);
+            => await _PackageSenderManager.MakeField(playerAbilities, flyingSpeed, walkingSpeed);
 
         */
 
@@ -398,7 +399,7 @@ namespace Mojang.Minecraft.Protocol
         /// <returns></returns>
         [PackageSender(0x14)]
         protected virtual async Task TabCompleteRequest([Variable] string text, bool hasPosition, [Optional] Position? lookedAtBlock)
-            => await SendPackage(text, hasPosition, lookedAtBlock);
+            => await _PackageSenderManager.MakeField(text, hasPosition, lookedAtBlock);
 
 
         public enum ChatMode : byte
@@ -432,7 +433,7 @@ namespace Mojang.Minecraft.Protocol
         /// <returns></returns>
         [PackageSender(0x15)]
         protected virtual async Task SetClientSettings([Variable] string locale, byte viewDistance, ChatMode chatMode, bool chatColors, DisplayedSkinParts displayedSkinParts)
-            => await SendPackage(locale, viewDistance, chatMode, chatColors, displayedSkinParts);
+            => await _PackageSenderManager.MakeField(locale, viewDistance, chatMode, chatColors, displayedSkinParts);
 
 
         [VarIntUnderlying]
@@ -449,7 +450,7 @@ namespace Mojang.Minecraft.Protocol
         /// <returns></returns>
         [PackageSender(0x16)]
         protected virtual async Task ChangeState(StateAction action)
-            => await SendPackage(action);
+            => await _PackageSenderManager.MakeField(action);
 
 
         //PluginMessage 0x17
@@ -462,7 +463,7 @@ namespace Mojang.Minecraft.Protocol
         /// <returns></returns>
         [PackageSender(0x18)]
         protected virtual async Task Spectate(Uuid targetPlayer)
-            => await SendPackage(targetPlayer);
+            => await _PackageSenderManager.MakeField(targetPlayer);
 
 
         [VarIntUnderlying]
@@ -483,7 +484,7 @@ namespace Mojang.Minecraft.Protocol
         /// <returns></returns>
         [PackageSender(0x19)]
         protected virtual async Task SetResourcePackStatus([Variable] string hash, ResourcePackResult reslut)
-            => await SendPackage(hash, reslut);
+            => await _PackageSenderManager.MakeField(hash, reslut);
 
     }
 }

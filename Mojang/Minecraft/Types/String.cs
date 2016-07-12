@@ -10,17 +10,17 @@ namespace Mojang.Minecraft
     /// <summary>
     /// UTF-8编码的字符串，首位是字符串长度，长于2，短于240
     /// </summary>
-    public class VarintPrefixedUTF8String : IPackageField
+    public class PString : IPackageField
     {
         protected string _InnerString;
 
 
-        public VarintPrefixedUTF8String()
+        public PString()
         {
         }
 
 
-        public VarintPrefixedUTF8String(string str)
+        public PString(string str)
         {
             _InnerString = str ?? string.Empty;
         }
@@ -29,24 +29,30 @@ namespace Mojang.Minecraft
         public override string ToString() => _InnerString;
 
 
-        internal virtual void AppendIntoPackageMaker(PackageMaker packageMaker)
+        internal virtual void AppendIntoField(FieldMaker fieldMaker)
         {
-            packageMaker.AppendVarintLengthPrefixedBytes(Encoding.UTF8.GetBytes(_InnerString));
+            var bytes = Encoding.UTF8.GetBytes(_InnerString);
+            var length = new VarInt((uint)bytes.Length);
+
+            fieldMaker.AppendPackageField(length);
+            fieldMaker.AppendBytes(bytes);
+
+            //fieldMaker.AppendVarintLengthPrefixedBytes(Encoding.UTF8.GetBytes(_InnerString));
         }
 
 
-        void IPackageField.AppendIntoPackageMaker(PackageMaker packageMaker)
+        void IPackageField.AppendIntoField(FieldMaker fieldMaker)
         {
-            AppendIntoPackageMaker(packageMaker);
+            AppendIntoField(fieldMaker);
         }
 
-        void IPackageField.FromFieldMatcher(FieldMatcher fieldMatcher)
+        void IPackageField.FromField(FieldMatcher fieldMatcher)
         {
-            FromFieldMatcher(fieldMatcher);
+            FromField(fieldMatcher);
         }
 
 
-        internal virtual void FromFieldMatcher(FieldMatcher fieldMatcher)
+        internal virtual void FromField(FieldMatcher fieldMatcher)
         {
             var stringLength = fieldMatcher.MatchPackageField<VarInt>();
             var stringData = fieldMatcher.ReadBytes(stringLength);
@@ -57,12 +63,12 @@ namespace Mojang.Minecraft
 
 
 
-        public static implicit operator string (VarintPrefixedUTF8String str)
+        public static implicit operator string (PString str)
             => str.ToString();
 
 
-        public static implicit operator VarintPrefixedUTF8String (string str)
-            => new VarintPrefixedUTF8String(str);
+        public static implicit operator PString (string str)
+            => new PString(str);
 
     }
 }

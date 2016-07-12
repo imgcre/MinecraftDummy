@@ -42,7 +42,7 @@ namespace Mojang.Minecraft
             => _InnerInteger;
 
 
-        void IPackageField.AppendIntoPackageMaker(PackageMaker packageMaker)
+        void IPackageField.AppendIntoField(FieldMaker fieldMaker)
         {
             var list = new List<byte>();
             var integer = _InnerInteger;
@@ -53,10 +53,10 @@ namespace Mojang.Minecraft
             }
             while (integer != 0);
             list[list.Count - 1] &= 0x7f;
-            packageMaker.AppendBytes(list);
+            fieldMaker.AppendBytes(list);
         }
 
-        void IPackageField.FromFieldMatcher(FieldMatcher fieldMatcher)
+        void IPackageField.FromField(FieldMatcher fieldMatcher)
         {
             //从stream中获得varint
             //获得一个字节，判断该字节的msb是否为1，如果为1，则存在下一个字节，如果超过msb为1的字节超过4个，则参数有问题

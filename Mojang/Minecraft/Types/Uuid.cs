@@ -50,7 +50,7 @@ namespace Mojang.Minecraft
         }
 
 
-        void IPackageField.FromFieldMatcher(FieldMatcher fieldMatcher)
+        void IPackageField.FromField(FieldMatcher fieldMatcher)
         {
             A = fieldMatcher.MatchMetaType<int>();
             B = fieldMatcher.MatchMetaType<short>();
@@ -66,19 +66,19 @@ namespace Mojang.Minecraft
         }
 
 
-        void IPackageField.AppendIntoPackageMaker(PackageMaker packageMaker)
+        void IPackageField.AppendIntoField(FieldMaker fieldMaker)
         {
-            packageMaker.AppendMetaType(A);
-            packageMaker.AppendMetaType(B);
-            packageMaker.AppendMetaType(C);
-            packageMaker.AppendMetaType(D);
-            packageMaker.AppendMetaType(E);
-            packageMaker.AppendMetaType(F);
-            packageMaker.AppendMetaType(G);
-            packageMaker.AppendMetaType(H);
-            packageMaker.AppendMetaType(I);
-            packageMaker.AppendMetaType(J);
-            packageMaker.AppendMetaType(K);
+            fieldMaker.AppendMetaType(A);
+            fieldMaker.AppendMetaType(B);
+            fieldMaker.AppendMetaType(C);
+            fieldMaker.AppendMetaType(D);
+            fieldMaker.AppendMetaType(E);
+            fieldMaker.AppendMetaType(F);
+            fieldMaker.AppendMetaType(G);
+            fieldMaker.AppendMetaType(H);
+            fieldMaker.AppendMetaType(I);
+            fieldMaker.AppendMetaType(J);
+            fieldMaker.AppendMetaType(K);
         }
 
 

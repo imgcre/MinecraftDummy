@@ -66,7 +66,7 @@ namespace Mojang.Minecraft.Protocol.Providers
             where T : IPackageField, new()
         {
             var obj = new T();
-            obj.FromFieldMatcher(this);
+            obj.FromField(this);
             return obj;
         }
 
@@ -74,7 +74,7 @@ namespace Mojang.Minecraft.Protocol.Providers
         public IPackageField MatchPackageField(Type t)
         {
             var obj = Activator.CreateInstance(t, null) as IPackageField;
-            obj.FromFieldMatcher(this);
+            obj.FromField(this);
             return obj;
         }
 

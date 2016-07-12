@@ -12,13 +12,13 @@ namespace Mojang.Minecraft
 
         public FieldMatcher ChannelDataMatcher{ get; private set; }
 
-        void IPackageField.FromFieldMatcher(FieldMatcher fieldMatcher)
+        void IPackageField.FromField(FieldMatcher fieldMatcher)
         {
             //ChannelDataMatcher = new FieldMatcher(fieldMatcher.ReadElementsFromStream(fieldMatcher.Count).ToList());
         }
 
 
-        void IPackageField.AppendIntoPackageMaker(PackageMaker packageMaker)
+        void IPackageField.AppendIntoField(FieldMaker fieldMaker)
         {
             throw new NotImplementedException();
         }

@@ -43,13 +43,12 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
-    <Reference Include="zlib.net">
-      <HintPath>.\zlib.net.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Minecraft\Bukkit\Client.cs" />
+    <Compile Include="Minecraft\Protocol\Client\PackageHandlerManager.cs" />
     <Compile Include="Minecraft\Protocol\Client\PackageHandlersPreparer.cs" />
+    <Compile Include="Minecraft\Protocol\Client\PackageSenderManager.cs" />
     <Compile Include="Minecraft\Protocol\Client\PackageSenders.cs" />
     <Compile Include="Minecraft\Protocol\Client\EssentialClient.cs" />
     <Compile Include="Minecraft\Protocol\Client\PackageDispatcher.cs" />
@@ -60,9 +59,13 @@
     <Compile Include="Minecraft\Protocol\Providers\BigEndianBitConvertor.cs" />
     <Compile Include="Minecraft\Protocol\Providers\ConnectStream.cs" />
     <Compile Include="Minecraft\Protocol\Providers\DefaultConnectProvider.cs" />
+    <Compile Include="Minecraft\Protocol\Providers\FieldMaker.cs" />
     <Compile Include="Minecraft\Protocol\Providers\FieldMatcher.cs" />
+    <Compile Include="Minecraft\Protocol\Providers\PackageFieldAttributes.cs" />
+    <Compile Include="Minecraft\Protocol\Providers\HandlerManager.cs" />
     <Compile Include="Minecraft\Protocol\Providers\IConnectProvider.cs" />
     <Compile Include="Minecraft\Protocol\Providers\PackageMaker.cs" />
+    <Compile Include="Minecraft\Protocol\Providers\SenderManager.cs" />
     <Compile Include="Minecraft\Protocol\Providers\Socks5ConnectProvider.cs" />
     <Compile Include="Minecraft\Types\Angle.cs" />
     <Compile Include="Minecraft\Types\ChannelDataReciever.cs" />
@@ -81,6 +84,9 @@
     <Compile Include="Minecraft\Types\Uuid.cs" />
     <Compile Include="Minecraft\Types\Varint.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Minecraft\Protocol\Attributes\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

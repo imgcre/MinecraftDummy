@@ -1,5 +1,4 @@
-﻿using Mojang.Minecraft.Protocol.Providers;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -7,94 +6,100 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Mojang.Minecraft.Protocol
+namespace Mojang.Minecraft.Protocol.Providers
 {
-    public partial class EssentialClient
+    internal abstract class SenderManager<TOwner, TSenderAttribute, TSenderKey>
+        where TSenderAttribute : Attribute, ISenderAttribute<TSenderKey>
     {
-        
+        protected MethodBase _CurrentSender { get; private set; }
+        protected TSenderAttribute _CurrentAttribute { get; private set; }
 
-        /*
-        [AttributeUsage(AttributeTargets.Method)]
-        private sealed class PackageSenderAttribute : Attribute
+        protected readonly TOwner OwnerInstance;
+
+
+        public SenderManager(TOwner ownerInstance)
         {
-            public readonly int TypeCode;
-            public readonly State State;
-
-            /// <summary>
-            /// 指定此封包发送方法所适用的封包id
-            /// </summary> 
-            public PackageSenderAttribute(int typeCode, State state = State.Play)
-            {
-                TypeCode = typeCode;
-                State = state;
-            }
-        }
-
-        */
-
-        public class ConnectStateException : Exception
-        {
-            public ConnectStateException(string message) : base(message)
-            {
-                
-            }
+            OwnerInstance = ownerInstance;
         }
 
         /*
-        protected async Task SendPackage(params object[] fields)
+         * 当某方法调用Send方法时，通过调用堆栈获得caller签名，判断caller签名是否合法
+         * 通过caller签名构造TPackageMaker，将实参通过AppendIntoPackage转为字节流
+         * 打包字节流(MakePackage)，完成对封包的构造
+         * 
+         * 对于顶级封包，需要驱动方法来完成封包的发送
+         */
+
+        protected virtual bool IdentifySender(TSenderAttribute attribute)
+            => attribute != null;
+
+
+        protected virtual async Task<FieldMaker> MakeFieldInternal(MethodBase sender, TSenderAttribute attribute, params object[] fields)
+        {
+            return await Task.Run(() => 
+            {
+                //只有应用了[PackageSender]的方法才能调用此方法
+                //发送方法中不能有byte[]参数
+                if (!IdentifySender(attribute))
+                    throw new ArgumentException("非法的调用");
+
+                //检查object[]中的类型是否与sender的参数类型相匹配
+                if (sender.GetParameters().Length != fields.Length)
+                    throw new ArgumentException("传入的参数数组长度与sender形参数量不同");
+                foreach (var parameter in sender.GetParameters())
+                {
+                    if (fields[parameter.Position] == null)
+                        break;
+
+                    var baredParamType = parameter.ParameterType;
+
+                    if (parameter.ParameterType.IsGenericType && parameter.ParameterType.GetGenericTypeDefinition() == typeof(Nullable<>))
+                    {
+                        baredParamType = parameter.ParameterType.GetGenericArguments().First();
+                    }
+
+                    if (fields[parameter.Position].GetType() != baredParamType)
+                    {
+                        throw new ArgumentException("传入的参数类型与sender形参类型不同");
+                    }
+                }
+
+                var fieldMaker = new FieldMaker();
+
+                foreach (var parameter in sender.GetParameters())
+                {
+                    var parameterType = parameter.ParameterType;
+                    if (parameterType.IsGenericType && parameterType.GetGenericTypeDefinition() == typeof(Nullable<>))
+                    {
+                        parameterType = parameterType.GetGenericArguments().First();
+                    }
+
+                    AppendIntoField(fieldMaker, fields[parameter.Position], parameterType, parameter.GetCustomAttributes());
+
+                }
+
+                return fieldMaker;
+            });
+        }
+
+
+        public async Task<FieldMaker> MakeField(params object[] fields)
         {
             //只有应用了[PackageSender]的方法才能调用此方法
             //发送方法中不能有byte[]参数
             var sender = new StackTrace().GetFrame(5).GetMethod();
-            var packageSenderAttribute = sender.GetCustomAttribute<PackageSenderAttribute>();
-            if (packageSenderAttribute == null)
-                throw new ArgumentException("调用方未应用[PackageSender]");
+            var senderAttribute = sender.GetCustomAttribute<TSenderAttribute>();
 
-            if (packageSenderAttribute.State != _ConnectState)
-                throw new ConnectStateException("当前状态无法满足目标发送器所需状态");
-
-            //检查object[]中的类型是否与sender的参数类型相匹配
-            if (sender.GetParameters().Length != fields.Length)
-                throw new ArgumentException("传入的参数数组长度与sender形参数量不同");
-            foreach (var parameter in sender.GetParameters())
-            {
-                if (fields[parameter.Position] == null)
-                    break;
-
-                var baredParamType = parameter.ParameterType;
-
-                if (parameter.ParameterType.IsGenericType && parameter.ParameterType.GetGenericTypeDefinition() == typeof(Nullable<>))
-                {
-                    baredParamType = parameter.ParameterType.GetGenericArguments().First();
-                }
-
-                if (fields[parameter.Position].GetType() != baredParamType)
-                {
-                    throw new ArgumentException("传入的参数类型与sender形参类型不同");
-                }
-            }
-
-            var typeCode = (packageSenderAttribute as PackageSenderAttribute).TypeCode;
-            var packageMaker = new PackageMaker(typeCode);
-
-            foreach (var parameter in sender.GetParameters())
-            {
-                var parameterType = parameter.ParameterType;
-                if (parameterType.IsGenericType && parameterType.GetGenericTypeDefinition() == typeof(Nullable<>))
-                {
-                    parameterType = parameterType.GetGenericArguments().First();
-                }
-
-                AppendToPackageMaker(packageMaker, fields[parameter.Position], parameterType, parameter.GetCustomAttributes());
-
-            }
-            await _ConnectProvider.Send(packageMaker.MakePackage());
+            return await MakeFieldInternal(sender, senderAttribute, fields);
         }
 
 
-        void AppendToPackageMaker(FieldMaker fieldMaker, object actualParameter, Type actualParameterType, IEnumerable<Attribute> formalParameterAttributes)
+        
+
+
+        void AppendIntoField(FieldMaker fieldMaker, object actualParameter, Type actualParameterType, IEnumerable<Attribute> formalParameterAttributes)
         {
-            
+
             if (formalParameterAttributes.Contains(new OptionalAttribute()) && actualParameter == null)
             {
                 return;
@@ -114,7 +119,7 @@ namespace Mojang.Minecraft.Protocol
 
                 foreach (var element in array)
                 {
-                    AppendToPackageMaker(fieldMaker, element, actualParameterType.GetElementType(), formalParameterAttributes);
+                    AppendIntoField(fieldMaker, element, actualParameterType.GetElementType(), formalParameterAttributes);
                 }
 
             }
@@ -172,7 +177,14 @@ namespace Mojang.Minecraft.Protocol
             //TODO:宽度为128的整数发送侧
             else throw new ArgumentOutOfRangeException("参数类型超出了预计的范围");
         }
-        */
+    }
+
+    internal interface ISenderAttribute<TSenderKey>
+    {
+        TSenderKey SenderKey { get; }
 
     }
+
+
+
 }

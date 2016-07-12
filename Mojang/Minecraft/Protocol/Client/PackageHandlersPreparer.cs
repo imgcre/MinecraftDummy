@@ -7,8 +7,11 @@ using System.Threading.Tasks;
 
 namespace Mojang.Minecraft.Protocol
 {
+    
     public partial class EssentialClient
     {
+
+        /*
         private static readonly Dictionary<State, Dictionary<int, PackageHandlerInfo>> PackageHandlers =
             (from handler in from method in typeof(EssentialClient).GetMethods(BindingFlags.NonPublic | BindingFlags.Instance)
                              let attribute = method.GetCustomAttribute<PackageHandlerAttribute>()
@@ -54,5 +57,7 @@ namespace Mojang.Minecraft.Protocol
                 HandlerAttribute = attribute;
             }
         }
+        */
     }
+
 }

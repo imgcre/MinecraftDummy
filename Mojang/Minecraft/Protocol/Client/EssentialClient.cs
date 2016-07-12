@@ -28,9 +28,20 @@ namespace Mojang.Minecraft.Protocol
         private Stream _ConnectStream;
         private State _ConnectState = State.Handshaking;
         private Task _DispatchCycle;
+        private PackageHandlerManager _PackageHandlerManager;
+        private PackageSenderManager _PackageSenderManager;
 
         public string ServerAddress => _ConnectProvider.ServerAddress;
         public ushort ServerPort => _ConnectProvider.ServerPort;
+
+
+        private enum State
+        {
+            Handshaking,
+            Status,
+            Login,
+            Play,
+        }
 
         /// <summary>
         /// 连接至mc服务器
@@ -60,6 +71,8 @@ namespace Mojang.Minecraft.Protocol
         private void Initlize()
         {
             _ConnectStream = new ConnectStream(_ConnectProvider);
+            _PackageHandlerManager = new PackageHandlerManager(this);
+            _PackageSenderManager = new PackageSenderManager(this);
         }
 
 

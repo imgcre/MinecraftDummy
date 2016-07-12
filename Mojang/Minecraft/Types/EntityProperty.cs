@@ -13,14 +13,14 @@ namespace Mojang.Minecraft
         public double Value { get; set; }
         public Modifier[] Modifiers { get; set; }
 
-        void IPackageField.AppendIntoPackageMaker(PackageMaker packageMaker)
+        void IPackageField.AppendIntoField(FieldMaker fieldMaker)
         {
             throw new NotImplementedException();
         }
 
-        void IPackageField.FromFieldMatcher(FieldMatcher fieldMatcher)
+        void IPackageField.FromField(FieldMatcher fieldMatcher)
         {
-            Key = fieldMatcher.MatchPackageField<VarintPrefixedUTF8String>();
+            Key = fieldMatcher.MatchPackageField<PString>();
             Value = fieldMatcher.MatchMetaType<double>();
 
             int listLength = fieldMatcher.MatchPackageField<VarInt>();

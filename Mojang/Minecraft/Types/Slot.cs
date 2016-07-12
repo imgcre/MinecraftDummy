@@ -50,7 +50,7 @@ namespace Mojang.Minecraft
         }
 
 
-        void IPackageField.FromFieldMatcher(FieldMatcher fieldMatcher)
+        void IPackageField.FromField(FieldMatcher fieldMatcher)
         {
             ItemId = fieldMatcher.MatchMetaType<short>();
             if (ItemId == -1) return;
@@ -63,18 +63,18 @@ namespace Mojang.Minecraft
         }
 
 
-        void IPackageField.AppendIntoPackageMaker(PackageMaker packageMaker)
+        void IPackageField.AppendIntoField(FieldMaker fieldMaker)
         {
             if (ItemId == -1)
             {
-                packageMaker.AppendMetaType(ItemId);
+                fieldMaker.AppendMetaType(ItemId);
                 return;
             }
 
-            packageMaker.AppendMetaType(ItemId);
-            packageMaker.AppendMetaType(ItemCount);
-            packageMaker.AppendMetaType(ItemDamage);
-            packageMaker.AppendPackageField(_Nbt);
+            fieldMaker.AppendMetaType(ItemId);
+            fieldMaker.AppendMetaType(ItemCount);
+            fieldMaker.AppendMetaType(ItemDamage);
+            fieldMaker.AppendPackageField(_Nbt);
         }
 
 

@@ -22,14 +22,14 @@ namespace Mojang.Minecraft
         }
         
 
-        void IPackageField.FromFieldMatcher(FieldMatcher fieldMatcher)
+        void IPackageField.FromField(FieldMatcher fieldMatcher)
         {
             _Vaule = fieldMatcher.MatchMetaType<byte>();
         }
 
 
-        void IPackageField.AppendIntoPackageMaker(PackageMaker packageMaker) 
-            => packageMaker.AppendMetaType(_Vaule);
+        void IPackageField.AppendIntoField(FieldMaker fieldMaker) 
+            => fieldMaker.AppendMetaType(_Vaule);
 
 
         public static implicit operator float(Angle angle) => angle._Vaule / 255f * 360;
