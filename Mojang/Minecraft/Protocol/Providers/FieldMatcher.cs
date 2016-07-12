@@ -12,6 +12,7 @@ namespace Mojang.Minecraft.Protocol.Providers
     internal sealed class FieldMatcher : IDisposable
     {
         private Stream _Stream;
+        public readonly EssentialClient Owner;
         public readonly int PackageTypeCode;
         public bool Empty => ResidualPackageBodyLength <= 0;
         private readonly int PackageLength;
@@ -27,9 +28,10 @@ namespace Mojang.Minecraft.Protocol.Providers
         private int ResidualPackageBodyLength => PackageBodyLength - UsedBodyLength;
         
 
-        public FieldMatcher(Stream stream)
+        public FieldMatcher(EssentialClient owner, Stream stream)
         {
             // 获得封包长度，注意此处未赋值封包长度
+            Owner = owner;
             _Stream = stream;
             var packageLength = MatchPackageField<VarInt>();
             PackageLength = packageLength;

@@ -87,7 +87,7 @@ namespace Mojang.Minecraft.Protocol
                 {
                     for (;;)
                     {
-                        var fieldMatcher = new FieldMatcher(_ConnectStream);
+                        var fieldMatcher = new FieldMatcher(this, _ConnectStream);
                         if (fieldMatcher.IsNullPackage)
                             continue;
                         OnPackageReceived(fieldMatcher);

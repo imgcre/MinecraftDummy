@@ -12,13 +12,8 @@ namespace Mojang.Minecraft.Protocol
     /// </summary>
     public class PlayerClient : EssentialClient
     {
-        public string Username { get; set; }
-        public double X { get; private set; }
-        public double Y { get; private set; }
-        public double Z { get; private set; }
-        public float Yaw { get; private set; }
-        public float Pitch { get; private set; }
-
+        public string Username { get; private set; }
+        
         /// <summary>
         /// 连接至mc服务器
         /// </summary>
@@ -50,6 +45,11 @@ namespace Mojang.Minecraft.Protocol
             StartRecievePackage();
         }
 
+        public double X { get; private set; }
+        public double Y { get; private set; }
+        public double Z { get; private set; }
+        public float Yaw { get; private set; }
+        public float Pitch { get; private set; }
 
         protected override void OnPlayerPositionAndLookCame(double x, double y, double z, float yaw, float pitch, RelativePositions relativePositions)
         {
@@ -94,6 +94,100 @@ namespace Mojang.Minecraft.Protocol
             Yaw = yaw;
             Pitch = pitch;
             return base.SetLook(yaw, pitch, isOnGround);
+        }
+
+        public int EntityId { get; private set; }
+        public Gamemodes Gamemodes { get; private set; }
+        public Dimension Dimension { get; private set; }
+        public Difficulty Difficulty { get; private set; }
+        public byte MaxPlayers { get; private set; }
+        public LevelType LevelType { get; private set; }
+
+        protected override void OnGameJoined(int entityId, Gamemodes gamemode, Dimension dimension, Difficulty difficulty, byte maxPlayers, LevelType levelType, bool isDebugInfoReduced)
+        {
+            EntityId = entityId;
+            Gamemodes = gamemode;
+            Dimension = dimension;
+            Difficulty = difficulty;
+            MaxPlayers = maxPlayers;
+            LevelType = levelType;
+
+            base.OnGameJoined(entityId, gamemode, dimension, difficulty, maxPlayers, levelType, isDebugInfoReduced);
+        }
+
+        protected override void OnRespawned(Dimension dimension, Difficulty difficulty, Gamemodes gamemode, LevelType levelType)
+        {
+            Dimension = dimension;
+            Difficulty = difficulty;
+            LevelType = levelType;
+
+            base.OnRespawned(dimension, difficulty, gamemode, levelType);
+        }
+
+
+        protected override void OnDifficultyChanged(Difficulty difficulty)
+        {
+            Difficulty = difficulty;
+
+            base.OnDifficultyChanged(difficulty);
+        }
+
+        public Uuid Uuid { get; private set; }
+
+        protected override void OnSucessfullyLogined(string uuid, string username)
+        {
+            Uuid = Uuid.Parse(uuid);
+            Username = username;
+
+            base.OnSucessfullyLogined(uuid, username);
+        }
+
+        public long WorldAge { get; private set; }
+        public long DayTime { get; private set; }
+
+        protected override void OnTimeUpdated(long worldAge, long dayTime)
+        {
+            WorldAge = worldAge;
+            DayTime = dayTime;
+
+            base.OnTimeUpdated(worldAge, dayTime);
+        }
+
+
+        public float Health { get; private set; }
+        public int Food { get; private set; }
+        public float FoodSaturation { get; private set; }
+
+        protected override void OnHealthUpdated(float health, int food, float foodSaturation)
+        {
+            Health = health;
+            Food = food;
+            FoodSaturation = foodSaturation;
+
+            base.OnHealthUpdated(health, food, foodSaturation);
+        }
+
+        public byte HandHeldSlot { get; private set; }
+
+        protected override void OnHeldItemChanged(byte slot)
+        {
+            HandHeldSlot = slot;
+
+            base.OnHeldItemChanged(slot);
+        }
+
+
+        public PlayerAbilities PlayerAbilities { get; private set; }
+        public float FlyingSpeed { get; private set; }
+        public float WalkingSpeed { get; private set; }
+
+        protected override void OnPlayerAbilitiesCame(PlayerAbilities playerAbilities, float flyingSpeed, float walkingSpeed)
+        {
+            PlayerAbilities = playerAbilities;
+            FlyingSpeed = flyingSpeed;
+            WalkingSpeed = walkingSpeed;
+
+            base.OnPlayerAbilitiesCame(playerAbilities, flyingSpeed, walkingSpeed);
         }
 
     }

@@ -86,7 +86,7 @@ namespace Mojang.Minecraft.Protocol
         /// <param name="maxPlayers">客户端会以此来绘制玩家列表</param>
         /// <param name="levelType">default:普通世界 flat:超平坦 largeBiomes:巨大生物群系 amlified:放大世界 default_1_1:老算法的普通世界</param>
         [PackageHandler(0x01)]
-        protected virtual void OnGameJoined(int entityId, Gamemodes gamemode, Dimension dimension, Difficulty difficulty, byte maxPlayers, [Variable] string levelType, bool isDebugInfoReduced)
+        protected virtual void OnGameJoined(int entityId, Gamemodes gamemode, Dimension dimension, Difficulty difficulty, byte maxPlayers, LevelType levelType, bool isDebugInfoReduced)
         {
             ChangeState(StateAction.RequestStats).Wait();
         }
@@ -700,6 +700,13 @@ namespace Mojang.Minecraft.Protocol
         */
 
 
+        [PackageHandler(0x21)]
+        protected virtual void OnChunkDataCame(int chunkX, int chunkY, bool groundUpContinuous, ushort primaryBitMask, Chunk data)
+        {
+
+        }
+
+
         public enum GlobalEntityType : byte
         {
             Thunderbolt = 1
@@ -1003,7 +1010,7 @@ namespace Mojang.Minecraft.Protocol
         //OnPluginMessageCame
         /*
         [PackageHandler(0x3f)]
-        internal virtual void OnPluginMessageCame([Variable] string channel, ChannelDataReciever channelData)
+        protected virtual void OnPluginMessageCame([Variable] string channel, ChannelDataReciever channelData)
         {
 
         }
@@ -1012,14 +1019,14 @@ namespace Mojang.Minecraft.Protocol
 
         //OnDisconnected
         [PackageHandler(0x40)]
-        internal virtual void OnDisconnected(Chat reason)
+        protected virtual void OnDisconnected(Chat reason)
         {
 
         }
 
 
         [PackageHandler(0x41)]
-        internal virtual void OnDifficultyChanged(Difficulty difficulty)
+        protected virtual void OnDifficultyChanged(Difficulty difficulty)
         {
 
         }
@@ -1043,7 +1050,7 @@ namespace Mojang.Minecraft.Protocol
         /// <param name="entityId">Only for end combat and entity dead</param>
         /// <param name="message">Only for entity dead</param>
         [PackageHandler(0x42)]
-        internal virtual void OnCombating
+        protected virtual void OnCombating
         (
             CombatEvent combatEvent,
             [Optional(CombatEvent.EndCombat), Variable] int duration,

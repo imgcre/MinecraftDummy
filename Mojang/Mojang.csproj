@@ -69,6 +69,7 @@
     <Compile Include="Minecraft\Protocol\Providers\Socks5ConnectProvider.cs" />
     <Compile Include="Minecraft\Types\Angle.cs" />
     <Compile Include="Minecraft\Types\ChannelDataReciever.cs" />
+    <Compile Include="Minecraft\Types\Chunk.cs" />
     <Compile Include="Minecraft\Types\EntityProperty.cs" />
     <Compile Include="Minecraft\Types\Fixed.cs" />
     <Compile Include="Minecraft\Types\fNbt_v0.6.2_Annotated.cs" />

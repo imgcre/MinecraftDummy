@@ -23,19 +23,4 @@ namespace Mojang.Minecraft
         void AppendIntoField(FieldMaker fieldMaker);
     }
 
-    
-    internal static class IBitConvertibleHelper
-    {
-        public static T ToPackageField<T>(this byte[] data)
-            where T : IPackageField, new()
-        {
-            var stream = new MemoryStream(data) { Position = 0 };
-            var fieldMatcher = new FieldMatcher(stream);
-            var o = new T();
-            o.FromField(fieldMatcher);
-            return o;
-        }
-    }
-    
-
 }
