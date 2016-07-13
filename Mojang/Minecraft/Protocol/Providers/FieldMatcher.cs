@@ -25,7 +25,7 @@ namespace Mojang.Minecraft.Protocol.Providers
         //FIXME: 如果直接返回FieldMatcher内部的stream，则将脱离fieldMatcher对于封包状态的管理
         public Stream Stream => new FieldMatcherStream(this);
 
-        private int ResidualPackageBodyLength => PackageBodyLength - UsedBodyLength;
+        internal int ResidualPackageBodyLength => PackageBodyLength - UsedBodyLength;
         
 
         public FieldMatcher(EssentialClient owner, Stream stream)
@@ -102,6 +102,7 @@ namespace Mojang.Minecraft.Protocol.Providers
                     .Invoke(null, new object[] { ReadBytes(Marshal.SizeOf(t)), 0 });
         }
 
+        
 
         public static bool IsMetaType(Type t)
             => new[] {
@@ -139,6 +140,8 @@ namespace Mojang.Minecraft.Protocol.Providers
             => ReadBytes(1).First();
 
 
+        public void Clear() => ReadBytes(ResidualPackageBodyLength);
+
         #region IDisposable Support
         private bool disposedValue = false;
 
@@ -153,9 +156,6 @@ namespace Mojang.Minecraft.Protocol.Providers
                         //Console.WriteLine($"未实现的封包: {PackageTypeCode:x}");
                         if (UsedBodyLength != 0)
                             throw new ArgumentException($"封包id为0x{PackageTypeCode:x2}的handler签名与协议不匹配");
-
-                        //如果已使用的封包数据长度为0， 则表示未实现此封包的handler，此时需要FieldMatcher来平衡stream
-                        var bytes = ReadBytes(ResidualPackageBodyLength);
                     }
                 }
                 disposedValue = true;
@@ -208,8 +208,10 @@ namespace Mojang.Minecraft.Protocol.Providers
 
         public override int Read(byte[] buffer, int offset, int count)
         {
-            Array.Copy(_FieldMatcher.ReadBytes(count), 0, buffer, offset, count);
-            return count;
+            var length = Math.Min(_FieldMatcher.ResidualPackageBodyLength, count);
+
+            Array.Copy(_FieldMatcher.ReadBytes(length), 0, buffer, offset, length);
+            return length;
         }
 
         public override long Seek(long offset, SeekOrigin origin)

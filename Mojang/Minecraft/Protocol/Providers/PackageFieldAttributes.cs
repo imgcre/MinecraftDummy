@@ -10,7 +10,7 @@ namespace Mojang.Minecraft.Protocol.Providers
     internal class VariableCountAttribute : Attribute { }
 
 
-    public enum PrefixLengthFieldType
+    public enum FixedCountType
     {
         Byte,
         Short,
@@ -36,7 +36,7 @@ namespace Mojang.Minecraft.Protocol.Providers
         /// 
         /// </summary>
         /// <param name="type">前缀长度字段类型</param>
-        public FixedCountAttribute(PrefixLengthFieldType type)
+        public FixedCountAttribute(FixedCountType type)
         {
             CountType = new[] { typeof(byte), typeof(short), typeof(int) }[(int)type];
         }

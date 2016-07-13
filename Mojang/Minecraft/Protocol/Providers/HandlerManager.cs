@@ -24,10 +24,16 @@ namespace Mojang.Minecraft.Protocol.Providers
         }
 
 
+        /// <summary>
+        /// 同步构造参数，异步调用方法
+        /// </summary>
         public void InvokeHandler(THandlerKey handlerKey, FieldMatcher fieldMatcher)
         {
             if (!Handlers.Keys.Contains(handlerKey))
+            {
+                fieldMatcher.Clear();
                 throw new HandlerNotFoundException { };
+            }
 
             var actualParameters = GetActualParameters(Handlers[handlerKey], fieldMatcher);
             Task.Run(() => Handlers[handlerKey][OwnerInstance](actualParameters));

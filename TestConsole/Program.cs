@@ -37,7 +37,6 @@ namespace TestConsole
             var k = new TestClient("localhost", 25565, "pst");
             ReadLine();
         }
-
     }
 
 

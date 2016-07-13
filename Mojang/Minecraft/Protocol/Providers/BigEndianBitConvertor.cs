@@ -67,7 +67,7 @@ namespace Mojang.Minecraft.Protocol.Providers
             => BitConverter.ToSingle(value.TakeLittleEndianBytes<float>(startIndex), 0);
 
         public static ushort ToUInt16(byte[] value, int startIndex)
-            => BitConverter.ToUInt16(value.TakeLittleEndianBytes<uint>(startIndex), 0);
+            => BitConverter.ToUInt16(value.TakeLittleEndianBytes<ushort>(startIndex), 0);
         
         public static uint ToUInt32(byte[] value, int startIndex)
             => BitConverter.ToUInt32(value.TakeLittleEndianBytes<uint>(startIndex), 0);

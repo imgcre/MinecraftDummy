@@ -700,12 +700,6 @@ namespace Mojang.Minecraft.Protocol
         */
 
 
-        [PackageHandler(0x21)]
-        protected virtual void OnChunkDataCame(int chunkX, int chunkY, bool groundUpContinuous, ushort primaryBitMask, Chunk data)
-        {
-
-        }
-
 
         public enum GlobalEntityType : byte
         {
@@ -1000,22 +994,14 @@ namespace Mojang.Minecraft.Protocol
 
         }
 
-        //如果当前为Optional字段
-        //……如果当前剩余流
-        //…………尝试反序列化此字段
-        //…………如果失败了，此字段置null，尝试下一字段
-        //……否则
-        //…………当前字段置null
 
-        //OnPluginMessageCame
-        /*
+
         [PackageHandler(0x3f)]
-        protected virtual void OnPluginMessageCame([Variable] string channel, ChannelDataReciever channelData)
+        protected virtual void OnPluginMessageCame(Channel channel)
         {
 
         }
 
-        */
 
         //OnDisconnected
         [PackageHandler(0x40)]
