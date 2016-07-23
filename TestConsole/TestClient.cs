@@ -29,6 +29,16 @@ namespace TestConsole
 
         }
 
+        protected override void OnEntityEquipped(int entityId, EquipmentSlot slot, Slot item)
+        {
+            if (slot == EquipmentSlot.Held)
+            {
+                Console.WriteLine(item);
+            }
+
+            base.OnEntityEquipped(entityId, slot, item);
+        }
+
 
         bool _FirstChat = true;
 

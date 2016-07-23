@@ -6,15 +6,39 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Reflection;
 
 namespace Mojang.Minecraft
 {
 
     public class Channel : IPackageField
     {
+        private string _ChannelName;
+        private byte[] _ChannelData;
+        private bool _ChannelSenderInvoked;
+
+        public Channel()
+        {
+
+        }
+
+
+        internal Channel(string channelName, byte[] channelData)
+        {
+            _ChannelName = channelName;
+            _ChannelData = channelData;
+            _ChannelSenderInvoked = true;
+        }
+
+
         void IPackageField.AppendIntoField(FieldMaker fieldMaker)
         {
-            throw new NotImplementedException();
+            if (!_ChannelSenderInvoked)
+                throw new NotSupportedException("只能通过调用channel sender来隐式构造channel");
+
+            fieldMaker.AppendPackageField<PString>(_ChannelName);
+            fieldMaker.AppendBytes(_ChannelData);
+            
         }
 
         void IPackageField.FromField(FieldMatcher fieldMatcher)
@@ -86,6 +110,42 @@ namespace Mojang.Minecraft
         }
     }
 
+    internal class ChannelSenderManager : SenderManager<EssentialClient, ChannelSenderAttribute, string>
+    {
+        public ChannelSenderManager(EssentialClient ownerInstance) : base(ownerInstance)
+        {
+
+        }
+
+        protected override void AppendIntoField(FieldMaker fieldMaker, object actualParameter, Type actualParameterType, IEnumerable<Attribute> formalParameterAttributes)
+        {
+            //TODO: 前条件失效
+            var stringArray = actualParameter as string[];
+
+            if (!(stringArray == null || formalParameterAttributes.Contains(new VariableAttribute())))
+            {
+                if (stringArray.Length == 0)
+                    throw new ArgumentException("传入参数无元素");
+
+                Array.ForEach(stringArray.Take(stringArray.Length - 1).ToArray(), str => fieldMaker.AppendBytes(Encoding.UTF8.GetBytes(str).Concat(new byte[] { 0 })));
+                fieldMaker.AppendBytes(Encoding.UTF8.GetBytes(stringArray.Last()));
+                return;
+            }
+
+            base.AppendIntoField(fieldMaker, actualParameter, actualParameterType, formalParameterAttributes);
+        }
+
+        protected override async Task<FieldMaker> SendInternal(MethodBase sender, ChannelSenderAttribute attribute, params object[] fields)
+        {
+            var fieldMatcher = await base.SendInternal(sender, attribute, fields);
+            var channel = new Channel(attribute.SenderKey, fieldMatcher.GetBytes());
+            await OwnerInstance.PluginMessage(channel);
+            return null;
+        }
+
+    }
+
+
     [AttributeUsage(AttributeTargets.Method)]
     internal class ChannelHandlerAttribute : Attribute, IHandlerAttribute<string>
     {
@@ -94,6 +154,18 @@ namespace Mojang.Minecraft
         public ChannelHandlerAttribute(string channelName)
         {
             HandlerKey = channelName;
+        }
+    }
+
+
+    [AttributeUsage(AttributeTargets.Method)]
+    internal class ChannelSenderAttribute : Attribute, ISenderAttribute<string>
+    {
+        public string SenderKey { get; set; }
+
+        public ChannelSenderAttribute(string channelName)
+        {
+            SenderKey = channelName;
         }
     }
 }

@@ -21,9 +21,9 @@ namespace Mojang.Minecraft.Protocol
                 => base.IdentifySender(attribute) && OwnerInstance._ConnectState == attribute.SenderKey.State;
 
 
-            protected override async Task<FieldMaker> MakeFieldInternal(MethodBase sender, PackageSenderAttribute attribute, params object[] fields)
+            protected override async Task<FieldMaker> SendInternal(MethodBase sender, PackageSenderAttribute attribute, params object[] fields)
             {
-                var fieldMaker = await base.MakeFieldInternal(sender, attribute, fields);
+                var fieldMaker = await base.SendInternal(sender, attribute, fields);
                 var typeCode = attribute.SenderKey.PackageID;
                 var packageMaker = new PackageMaker(typeCode, fieldMaker);
                 await OwnerInstance._ConnectProvider.Send(packageMaker.MakePackage());

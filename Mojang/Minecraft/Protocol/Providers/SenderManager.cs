@@ -34,7 +34,7 @@ namespace Mojang.Minecraft.Protocol.Providers
             => attribute != null;
 
 
-        protected virtual async Task<FieldMaker> MakeFieldInternal(MethodBase sender, TSenderAttribute attribute, params object[] fields)
+        protected virtual async Task<FieldMaker> SendInternal(MethodBase sender, TSenderAttribute attribute, params object[] fields)
         {
             return await Task.Run(() => 
             {
@@ -83,21 +83,18 @@ namespace Mojang.Minecraft.Protocol.Providers
         }
 
 
-        public async Task<FieldMaker> MakeField(params object[] fields)
+        public async Task Send(params object[] fields)
         {
             //只有应用了[PackageSender]的方法才能调用此方法
             //发送方法中不能有byte[]参数
             var sender = new StackTrace().GetFrame(5).GetMethod();
             var senderAttribute = sender.GetCustomAttribute<TSenderAttribute>();
 
-            return await MakeFieldInternal(sender, senderAttribute, fields);
+            await SendInternal(sender, senderAttribute, fields);
         }
 
 
-        
-
-
-        void AppendIntoField(FieldMaker fieldMaker, object actualParameter, Type actualParameterType, IEnumerable<Attribute> formalParameterAttributes)
+        protected virtual void AppendIntoField(FieldMaker fieldMaker, object actualParameter, Type actualParameterType, IEnumerable<Attribute> formalParameterAttributes)
         {
 
             if (formalParameterAttributes.Contains(new OptionalAttribute()) && actualParameter == null)

@@ -7,26 +7,20 @@ using Mojang.Minecraft.Protocol.Providers;
 
 namespace Mojang.Minecraft
 {
-    internal class ChannelDataReciever : IPackageField
+    public class BlockState : IPackageField
     {
-
-        public FieldMatcher ChannelDataMatcher{ get; private set; }
-
-        void IPackageField.FromField(FieldMatcher fieldMatcher)
-        {
-            //ChannelDataMatcher = new FieldMatcher(fieldMatcher.ReadElementsFromStream(fieldMatcher.Count).ToList());
-        }
-
+        private int _BlockState;
+        public int Id => _BlockState >> 4;
+        public int Damage => _BlockState & 15;
 
         void IPackageField.AppendIntoField(FieldMaker fieldMaker)
         {
             throw new NotImplementedException();
         }
 
+        void IPackageField.FromField(FieldMatcher fieldMatcher)
+        {
+            _BlockState = fieldMatcher.Match<VarInt>();
+        }
     }
-
-
-
 }
-
-

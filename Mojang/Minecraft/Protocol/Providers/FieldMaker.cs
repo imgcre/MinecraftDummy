@@ -8,7 +8,6 @@ namespace Mojang.Minecraft.Protocol.Providers
 {
     internal class FieldMaker
     {
-        public readonly EssentialClient Owner;
         private List<byte> _EntityList = new List<byte>();
 
         public byte[] GetBytes()

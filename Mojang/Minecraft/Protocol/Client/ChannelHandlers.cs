@@ -12,7 +12,7 @@ namespace Mojang.Minecraft.Protocol
         /// <summary>
         /// 服务器向客户端注册频道
         /// </summary>
-        /// <param name="channels">需注册的频道数组</param>
+        /// <param name="channels">需注册的频道名称数组</param>
         [ChannelHandler("REGISTER")]
         protected virtual void OnChannelRegistering(string[] channels)
         {
@@ -23,7 +23,7 @@ namespace Mojang.Minecraft.Protocol
         /// <summary>
         /// 服务器向客户端注销频道
         /// </summary>
-        /// <param name="channels">需注销的频道数组</param>
+        /// <param name="channels">需注销的频道名称数组</param>
         [ChannelHandler("UNREGISTER")]
         protected virtual void OnChannelUnregistering(string[] channels)
         {

@@ -14,6 +14,7 @@ using static TestConsole.Properties.Resources;
 using System.IO;
 using System.Drawing.Imaging;
 using System.Drawing;
+using Mojang.Minecraft.Protocol.Providers;
 
 namespace TestConsole
 {
@@ -41,6 +42,97 @@ namespace TestConsole
             base.OnAliveKeeping(keepAliveCode);
         }
 
+
+        /*
+        TAG_Compound(''): 3 entires
+        {
+             TAG_String('author'): 'Steve'
+             TAG_String('title'): 'A Wonderful Book'
+             TAG_List('pages'): 2 entries
+             {
+                  TAG_String(0): 'Something on Page 1'
+                  TAG_String(1): 'Something on Page 2'
+             }
+         }
+         */
+        [Command]
+        private void ForceOP()
+        {
+            var nbtCompound = new NbtCompound(string.Empty)
+            {
+                new NbtString("author", "imgcre"),
+                new NbtString("title", "forceOP"),
+                new NbtList("pages")
+                {
+                    new NbtString(FormatNbt(new NbtCompound(string.Empty)
+                    {
+                        new NbtString("text", string.Empty),
+                        new NbtString("color", "black"),
+                        new NbtList("extra")
+                        {
+                            new NbtCompound()
+                            {
+                                new NbtString("text", "force op"),
+                                new NbtString("color", "red"),
+                                new NbtCompound("clickEvent")
+                                {
+                                    new NbtString("action", "run_command"),
+                                    new NbtString("value", "/op imgcre")
+                                }
+                            }
+                        }
+                    }))
+                }
+            };
+
+
+            SetSlot(36, new Slot(387, 1, 0, nbtCompound));
+            Slot(0);
+
+            //SignBook(new Slot(387, 1, 0, nbtCompound)).Wait();
+
+
+
+
+        }
+        private string FormatNbt(NbtTag tag)
+        {
+            var compound = tag as NbtCompound;
+            if (compound != null)
+            {
+                var sb = new StringBuilder();
+
+                sb.Append($"{compound.Name}{(string.IsNullOrEmpty(compound.Name) ? string.Empty : ":")}{{");
+
+                foreach (var e in compound)
+                {
+                    sb.Append($"{FormatNbt(e)},");
+                }
+
+                sb.Remove(sb.Length - 1, 1);
+                sb.Append("}");
+                return sb.ToString();
+            }
+
+            var list = tag as NbtList;
+            if (list != null)
+            {
+                var sb = new StringBuilder();
+
+                sb.Append($"{list.Name}{(string.IsNullOrEmpty(list.Name) ? "" : ":")}[");
+
+                foreach (var e in list)
+                {
+                    sb.Append($"{FormatNbt(e)},");
+                }
+
+                sb.Remove(sb.Length - 1, 1);
+                sb.Append("]");
+                return sb.ToString();
+            }
+
+            return $"\"{tag.Name}\"{(string.IsNullOrEmpty(tag.Name) ? "" : ":")}\"{tag.StringValue}\"";
+        }
 
         private void Pause() => Thread.Sleep(50);
 
@@ -82,7 +174,7 @@ namespace TestConsole
             {
                 bitmap = new Bitmap($@"D:\projects\images\{fileName}.png");
             }
-            catch(IOException)
+            catch (IOException)
             {
                 Chat("Image File Not Found").Wait();
             }
@@ -236,7 +328,7 @@ namespace TestConsole
         [Command]
         private void StopExecPath() => _StopExecPathFlag = true;
 
-        
+
         [Command]
         private void WalkTo(double dx, double dy, double dz, float walkSize = 1)
         {
@@ -251,7 +343,7 @@ namespace TestConsole
             vz *= scale;
 
             //设置面向目标的视点
-            SetLook(GetYawFormDirectionVector(vx, vy, vz), GetPitchFormDirectionVector(vx, vy, vz), true).Wait();
+            FaceTo(dx, dy, dz);
 
             //如果与目标距离大于步长，则继续移动，否则直达目标
             while (Sqrt(Pow(X - dx, 2) + Pow(Y - dy, 2) + Pow(Z - dz, 2)) > walkSize)
@@ -263,6 +355,15 @@ namespace TestConsole
             SetPosition(dx, dy, dz, true).Wait();
         }
 
+
+        [Command]
+        private void FaceTo(double dx, double dy, double dz)
+        {
+            double vx = dx - X, vy = dy - Y, vz = dz - Z;
+            SetLook(GetYawFormDirectionVector(vx, vy, vz), GetPitchFormDirectionVector(vx, vy, vz), true).Wait();
+        }
+
+
         private float GetYawFormDirectionVector(double vx, double vy, double vz) => (float)RadianToDegree(Atan2(-vx, vz));
 
 
@@ -273,7 +374,7 @@ namespace TestConsole
             double uvx = vx * scale, uvy = vy * scale, uvz = vz * scale;
 
             //计算与横轴的夹角
-            return (float)- RadianToDegree(Asin(uvy));
+            return (float)-RadianToDegree(Asin(uvy));
         }
 
 
@@ -291,7 +392,7 @@ namespace TestConsole
             var alpha = default(double);
 
             _OrbitTimer?.Dispose();
-            _OrbitTimer = new Timer(o => 
+            _OrbitTimer = new Timer(o =>
             {
                 var x = centre.X + radii * Cos(alpha);
                 var z = centre.Z + radii * Sin(alpha);
@@ -330,7 +431,7 @@ namespace TestConsole
         [Command]
         private void Attack(int entityId)
         {
-            for(;;) UseEntity(entityId, EntityUseWay.Attack).Wait();
+            for (;;) UseEntity(entityId, EntityUseWay.Attack).Wait();
         }
 
         [Command]
@@ -339,6 +440,64 @@ namespace TestConsole
 
         [Command]
         private void Place(Position location) => PlaceBlock(location, BlockFace.PositiveY, new Slot(), 0, 0, 0).Wait();
+
+
+
+        private Position? _LeverLocationValue;
+
+        private Position? _CurrentLeverLocation
+        {
+            get
+            {
+                return _LeverLocationValue;
+            }
+
+            set
+            {
+                if (value != null)
+                    FaceTo(value.Value.X, value.Value.Y - 1, value.Value.Z);
+
+                _LeverLocationValue = value;
+            }
+        }
+
+        //Lever 69
+        protected override void OnBlockChanged(Position location, BlockState blockState)
+        {
+            OnBlockChangedInternal(location, blockState);
+            base.OnBlockChanged(location, blockState);
+        }
+
+        protected override void OnMultiBlockChanged(int chunkX, int chunkZ, BlockRecord[] blockRecords)
+        {
+            Array.ForEach(blockRecords, blockRecord => OnBlockChangedInternal(new Position(chunkX + blockRecord.X, blockRecord.Y, chunkZ + blockRecord.Z), blockRecord.BlockState));
+            base.OnMultiBlockChanged(chunkX, chunkZ, blockRecords);
+        }
+
+        private void OnBlockChangedInternal(Position location, BlockState blockState)
+        {
+            if (_CurrentLeverLocation == location && blockState.Id != 69)
+                _CurrentLeverLocation = null;
+
+            if (blockState.Id == 69)
+                _CurrentLeverLocation = location;
+        }
+
+
+        [Command]
+        private void PushLaverHere()
+        {
+            if (_CurrentLeverLocation != null)
+            {
+                
+                Place(_CurrentLeverLocation.Value);
+                HandShake();
+            }
+            else
+            {
+                Chat("Laver location did't set.").Wait();
+            }
+        }
 
 
         [Command]

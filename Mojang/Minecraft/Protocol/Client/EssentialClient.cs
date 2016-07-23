@@ -73,6 +73,8 @@ namespace Mojang.Minecraft.Protocol
             _ConnectStream = new ConnectStream(_ConnectProvider);
             _PackageHandlerManager = new PackageHandlerManager(this);
             _PackageSenderManager = new PackageSenderManager(this);
+            _ChannelSenderManager = new ChannelSenderManager(this);
+
         }
 
 

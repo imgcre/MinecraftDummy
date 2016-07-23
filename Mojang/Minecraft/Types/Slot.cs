@@ -42,6 +42,15 @@ namespace Mojang.Minecraft
             ItemDamage = itemDamage;
         }
 
+        public Slot(short itemId, byte itemCount, short itemDamage, NbtCompound nbtCompound) : this()
+        {
+            ItemId = itemId;
+            ItemCount = itemCount;
+            ItemDamage = itemDamage;
+            _Nbt = new Nbt(new NbtFile(nbtCompound));
+        }
+
+
         public Slot(NbtCompound nbtCompound)
         {
             ItemId = 0;

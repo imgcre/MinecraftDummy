@@ -47,6 +47,7 @@
   <ItemGroup>
     <Compile Include="Minecraft\Bukkit\Client.cs" />
     <Compile Include="Minecraft\Protocol\Client\ChannelHandlers.cs" />
+    <Compile Include="Minecraft\Protocol\Client\ChannelSenders.cs" />
     <Compile Include="Minecraft\Protocol\Client\PackageHandlerManager.cs" />
     <Compile Include="Minecraft\Protocol\Client\PackageHandlersPreparer.cs" />
     <Compile Include="Minecraft\Protocol\Client\PackageSenderManager.cs" />
@@ -69,7 +70,8 @@
     <Compile Include="Minecraft\Protocol\Providers\SenderManager.cs" />
     <Compile Include="Minecraft\Protocol\Providers\Socks5ConnectProvider.cs" />
     <Compile Include="Minecraft\Types\Angle.cs" />
-    <Compile Include="Minecraft\Types\ChannelDataReciever.cs" />
+    <Compile Include="Minecraft\Types\BlockRecord.cs" />
+    <Compile Include="Minecraft\Types\BlockState.cs" />
     <Compile Include="Minecraft\Types\Channel.cs" />
     <Compile Include="Minecraft\Types\EntityProperty.cs" />
     <Compile Include="Minecraft\Types\Fixed.cs" />
@@ -82,7 +84,7 @@
     <Compile Include="Minecraft\Types\Position.cs" />
     <Compile Include="Minecraft\Types\Slot.cs" />
     <Compile Include="Minecraft\Types\Statistic.cs" />
-    <Compile Include="Minecraft\Types\String.cs" />
+    <Compile Include="Minecraft\Types\PString.cs" />
     <Compile Include="Minecraft\Types\Trade.cs" />
     <Compile Include="Minecraft\Types\Uuid.cs" />
     <Compile Include="Minecraft\Types\Varint.cs" />

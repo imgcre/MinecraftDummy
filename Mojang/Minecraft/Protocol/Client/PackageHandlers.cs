@@ -699,6 +699,30 @@ namespace Mojang.Minecraft.Protocol
         }
         */
 
+        /// <summary>
+        /// 在渲染范围内的两个或多个方块被改变
+        /// </summary>
+        /// <param name="chunkX">区块X坐标</param>
+        /// <param name="chunkZ">区块Z坐标</param>
+        /// <param name="blockStates">方块状态值</param>
+        [PackageHandler(0x22)]
+        protected virtual void OnMultiBlockChanged(int chunkX, int chunkZ, [VariableCount] BlockRecord[] blockRecords)
+        {
+
+        }
+
+        /// <summary>
+        /// 在渲染范围内的方块被改变
+        /// </summary>
+        /// <param name="location"></param>
+        /// <param name="blockState"></param>
+        [PackageHandler(0x23)]
+        protected virtual void OnBlockChanged(Position location, BlockState blockState)
+        {
+
+        }
+        
+
 
 
         public enum GlobalEntityType : byte
