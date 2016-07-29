@@ -121,7 +121,6 @@ namespace TestConsole
                             {
                                 Chat(result.ToString()).Wait();
                             }
-                                
                         }
                         catch (ArgumentException e)
                         {

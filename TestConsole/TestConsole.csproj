@@ -45,6 +45,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CommandClasses.cs" />
+    <Compile Include="CommandClassManager.cs" />
     <Compile Include="CommandEngine.cs" />
     <Compile Include="Commands.cs" />
     <Compile Include="Program.cs" />

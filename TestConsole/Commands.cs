@@ -35,7 +35,6 @@ namespace TestConsole
 
         }
 
-
         protected override void OnAliveKeeping(int keepAliveCode)
         {
             ChangeOnGroundState(true).Wait();
@@ -387,7 +386,7 @@ namespace TestConsole
         private Timer _OrbitTimer;
 
         [Command]
-        private void Orbit(Position centre, int radii)
+        private void OrbitO(Position centre, int radii)
         {
             var alpha = default(double);
 
